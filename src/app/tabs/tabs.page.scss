@@ -1,1 +1,17 @@
 
+
+.notifications{
+  position: absolute;
+  top: 6px;
+  margin-left: 5px;
+  background-color: red;
+  font-weight: 600;
+  color: white;
+  padding: 3px;
+  border-radius: 50%;
+  min-width: 20px;
+  min-height: 20px;
+  justify-content: center;
+  align-items: center;
+  display: flex;
+}
