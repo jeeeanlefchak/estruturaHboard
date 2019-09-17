@@ -1,0 +1,51 @@
+<ion-menu id="menu" side="start" menuId="menuHome" contentId="menuHome">
+  <ion-card class="cardMenu">
+    <div class="imgFundo"></div>
+    <ion-avatar class="avatar" slot="start" position="floating"
+      [ngClass]="{'img-avatar' : !userLogged?.player?.person?.picture }">
+      <img *ngIf="userLogged?.player?.person?.picture"
+        [src]="domSanitizer.bypassSecurityTrustResourceUrl(userLogged?.player?.person?.picture)">
+      <span *ngIf="!userLogged?.player?.person?.picture && userLogged?.name"> {{userLogged?.name[0]}} </span>
+    </ion-avatar>
+    <ion-card-content>
+      <ion-label>
+        <h6>{{ userLogged?.name }}</h6>
+        <h6>{{ userLogged?.email }}</h6>
+      </ion-label>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-content>
+    <ion-list>
+      <ion-item (click)="navigate('account'); closeMenu() ">
+        <div class="item">
+          <!-- <ion-icon name="contact" class="padding"></ion-icon> -->
+          <i class="fal fa-address-card padding fa-fw"></i>
+          <ion-label >My account</ion-label>
+        </div>
+      </ion-item>
+      <ion-item (click)="navigate('settings'); closeMenu() ">
+        <div class="item">
+          <!-- <ion-icon name="settings" class="padding"></ion-icon> -->
+          <i class="fal fa-cogs padding fa-fw"></i>
+          <ion-label >Settings</ion-label>
+        </div>
+      </ion-item>
+      <ion-item (click)="navigate('about'); closeMenu()">
+        <div class="item">
+          <!-- <ion-icon name="alert" class="padding"></ion-icon> -->
+          <i class="fal fa-info padding fa-fw" ></i>
+          <ion-label >About app</ion-label>
+        </div>
+      </ion-item>
+      <ion-item (click)="logout(); closeMenu()">
+        <div class="item">
+          <!-- <ion-icon name="exit" class="padding"></ion-icon> -->
+          <i class="fal fa-sign-out-alt padding fa-fw"></i>
+          <ion-label >Logout</ion-label>
+        </div>
+      </ion-item>
+    </ion-list>
+  </ion-content>
+</ion-menu>
+<ion-router-outlet id="menuHome"></ion-router-outlet>

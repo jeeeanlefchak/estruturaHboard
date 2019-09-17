@@ -1,0 +1,24 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Communication channel</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-item lines='full' mode="ios">
+    <ion-label>Channel </ion-label>
+    <ion-select mode="ios" okText="Okay" cancelText="Dismiss" [(ngModel)]="channell">
+      <ion-select-option [value]="channel" *ngFor="let channel of channelTypes">{{channel.text}}
+      </ion-select-option>
+    </ion-select>
+  </ion-item>
+  <ion-item>
+    <!-- <ion-label position="floating">Login</ion-label> -->
+    <ion-input [(ngModel)]="text"></ion-input>
+  </ion-item>
+</ion-content>
+
+<div class="btns">
+  <button (click)="onSubmit()" color="ligth" class="submit">Ok</button>
+  <button (click)="close(null)" color="ligth" class="close">Cancel</button>
+</div>

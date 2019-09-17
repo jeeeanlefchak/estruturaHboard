@@ -1,0 +1,28 @@
+<ion-header>
+  <ion-toolbar mode="ios">
+    <ion-title text-center>Login</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content padding>
+  <h3 text-center>
+    Wesley Labor & Delivery Unit
+  </h3>
+
+
+  <form [formGroup]="signinForm" (ngSubmit)="onSubmit(); $event.preventDefault()">
+    <ion-item>
+      <ion-icon name="person" item-left color="primary"></ion-icon>
+      <ion-input padding placeholder="Login" formControlName="login"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-icon name="lock" item-left color="primary"></ion-icon>
+      <ion-input #password placeholder="Password" type="{{typePassword}}" (keypress)="pressEnter($event)"
+        formControlName="password"></ion-input>
+      <ion-icon class="icon-password" color="dark" name="{{iconPassword}}" (click)="viewerSenha()"></ion-icon>
+    </ion-item>
+    <br>
+    <ion-button (click)="onSubmit()" [disabled]="signinForm.invalid" expand="full" color="primary">Login</ion-button>
+  </form>
+</ion-content>

@@ -1,0 +1,95 @@
+<ion-header>
+  <ion-toolbar mode="ios">
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-title style="margin-right: 44px;" text-center *ngIf="!showSearchBar">Conditons</ion-title>
+
+    <ion-buttons slot="end">
+      <ion-button (click)="clickIconSearchBar()">
+        <ion-icon slot="icon-only" name="search"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+
+    <ion-searchbar #searchPatients animated *ngIf="showSearchBar" (ionCancel)="cancelSearch($event)"
+      (ionChange)="searchAllInterventions($event)" placeholder="Search"></ion-searchbar>
+
+  </ion-toolbar>
+
+</ion-header>
+
+<ion-content id=conditions>
+  <div class="container">
+    <ion-segment [(ngModel)]="context" mode="ios">
+      <ion-segment-button (click)="clickSegment('patientConditions')" value="patientConditions" mode="ios">
+        <ion-label class="segment-label-font">Patient conditions</ion-label>
+      </ion-segment-button>
+      <ion-segment-button (click)="clickSegment('groupAndConditions')" value="groupAndConditions" mode="ios">
+        <ion-label class="segment-label-font">Conditions</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+
+    <div [ngSwitch]="context">
+
+      <div *ngSwitchCase="'patientConditions'">
+        <div class="spinner" *ngIf="loadingConditionPatient">
+          <ion-spinner></ion-spinner>
+        </div>
+
+        <ion-list lines="full" *ngIf="!loadingConditionPatient">
+          <ion-item *ngFor="let condition of patientConditionList" [ngClass]="{'none' : condition.crudAction == 4}">
+            <ion-label>
+              {{condition.conditionTemplate?.displayName ? condition.conditionTemplate?.displayName : condition.conditionTemplate?.name}}
+            </ion-label>
+            <ion-buttons slot="end">
+              <ion-button>
+                <i class="fas fa-trash-alt" (click)="deleteCondition(condition)"></i>
+              </ion-button>
+              <ion-button (click)="sortUp(condition)">
+                <i class="fas fa-arrow-up"></i>
+              </ion-button>
+              <ion-button (click)="sortDown(condition)">
+                <i class="fas fa-arrow-down"></i>
+              </ion-button>
+            </ion-buttons>
+          </ion-item>
+        </ion-list>
+
+      </div>
+
+      <div *ngSwitchCase="'groupAndConditions'">
+        <div class="spinner" *ngIf="loadingConditionAndGroup">
+          <ion-spinner></ion-spinner>
+        </div>
+
+        <div *ngFor="let conditionGroup of conditionGroups">
+          <div class="titleGroup">
+            <ion-label>{{conditionGroup.name}}</ion-label>
+          </div>
+          <div class="items">
+            <div class="item" *ngFor="let conditionTemplate of conditionGroup.conditionTemplates">
+              <div [ngClass]="{'itemSelected': conditionTemplate.crudAction == 1 }" class="result"
+                (click)="changeItem(conditionTemplate)">
+                {{conditionTemplate.displayName ? conditionTemplate.displayName : conditionTemplate.name}}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+    </div>
+  </div>
+</ion-content>
+
+<div class="btns">
+    <div>
+      <button (click)="onSubmit()" title="Save" class="ok btn">Ok</button>
+      <button (click)="close()" class="cancel btn">Back</button>
+    </div>
+  </div>
+
+<!-- <div class="btns">
+  <button (click)="onSubmit()" color="ligth" class="submit">Ok</button>
+  <button (click)="close()" color="ligth" class="close">Cancel</button>
+</div> -->

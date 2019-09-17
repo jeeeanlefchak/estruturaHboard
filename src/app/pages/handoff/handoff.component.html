@@ -1,0 +1,45 @@
+<ion-header>
+  <ion-toolbar mode="ios">
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-title style="margin-right: 44px;" text-center>Handoff</ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  <ion-list>
+    <ion-list-header>Confirm</ion-list-header>
+
+    <ion-item lines='full' mode="ios">
+      <ion-label>Out player : {{userLogged?.name}}</ion-label>
+      <!-- <ion-select mode="ios" okText="Okay" disabled='true' cancelText="Dismiss" [(ngModel)]="outPlayerSelected">
+        <ion-select-option [value]="player" *ngFor="let player of outPlayerData">{{player.text}}</ion-select-option>
+      </ion-select> -->
+    </ion-item>
+
+    <ion-item lines='full' mode="ios">
+      <ion-label>In player</ion-label>
+      <ion-select mode="ios" okText="Okay" cancelText="Dismiss"
+        [(ngModel)]="inPlayerSelected">
+        <ion-select-option [value]="player" *ngFor="let player of data">{{player.text}}</ion-select-option>
+      </ion-select>
+    </ion-item>
+
+    <ion-item lines='full' mode="ios">
+      <ion-label>Positions</ion-label>
+      <ion-select mode="ios"  okText="Okay" cancelText="Dismiss"  [(ngModel)]="inPlayerPositionSelected" >
+        <ion-select-option [value]="playerPosition" *ngFor="let playerPosition of inPlayerPositionsData">
+          {{playerPosition?.text}}</ion-select-option>
+      </ion-select>
+    </ion-item>
+
+    <ion-item lines='full' mode="ios">
+      <ion-textarea mode="ios" placeholder="Comments" [(ngModel)]="careTransfer.comments"></ion-textarea>
+    </ion-item>
+  </ion-list>
+
+</ion-content>
+<div class="btns">
+  <button (click)="onSubmit()" color="ligth" class="submit">Ok</button>
+  <button (click)="close()" color="ligth" class="close">Cancel</button>
+</div>

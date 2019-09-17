@@ -1,0 +1,204 @@
+.detail{
+    width: 100%;
+    color: white;
+    background: rgb(47, 94, 122);
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+    padding-top: 1%;
+    padding-left: 4%;
+    margin-top: 2%;
+    .patientName{
+        font-size: 2.1rem;
+    }
+    .name{
+        font-size: 1.6rem;
+    }
+}
+
+#room{
+    .spinner{
+        position: absolute;
+        left: 49%;
+        top: 49%;
+    }
+    .title{
+        margin-top: -5px;
+        font-size: 0.7rem;
+    }
+    .main{
+        ion-note{
+            color: rgb(124, 124, 122);
+        }
+        .card{
+            background-color: rgb(244, 244, 242);
+            padding: 6px;
+            width: 100%;
+            border-radius: 13px;
+            margin: 6px 2px;
+        }
+        .nursing{
+            .space{
+                align-items: flex-end;
+                display: flex;
+                line-height: .9rem;
+            }
+            .position{
+                font-size: 0.9rem;
+                font-weight: 400;
+                color: #666;
+            }
+        }
+        .physician{
+            .person{
+                // display: grid;
+                span{
+                    // font-weight: 600;
+                    color: black;
+                    .point{
+                        margin: 0 -2px 0 -4px;
+                    }
+                }
+            }
+           
+        }
+        .admission{
+            b{
+                font-size: 1.55rem;
+            }
+            ion-col{
+                margin-top: 1%;
+            }
+            .comments{
+                width: 100%;
+                // display: flex;
+                // .lblComments{
+                //     span{
+                //         text-overflow: ellipsis;
+                //         white-space: nowrap;
+                //         overflow: hidden;
+                //     }
+                // }
+            }
+        }
+        .conditions{
+            .condition{
+                display: flex;
+                flex-wrap: wrap;
+                align-items: center;
+                span{
+                    display: flex;
+                }
+                .item{
+                    align-items: center;
+                    display: flex;
+                    .comments{
+                        font-size: 0.9rem;
+                    }
+                }
+                
+            }
+        }
+        .pregnancy{
+            .data-pregnancy{
+                width: 100%;
+                text-align: center;
+                .space{
+                    margin-left: -5px;
+                }
+            }
+            .calculatedPreg{
+                width: 100%;
+                text-align: center;
+                .weeks{
+                    font-size: 3rem;
+                }
+                .days{
+                    font-size: 1.5rem;
+                }
+            }
+            .byDD{
+                width: 100%;
+                text-align: center;
+            }
+            .numberOfFetus{
+                width: 100%;
+                text-align: center;
+                font-size: 0.7rem;
+            }
+        }
+        .cervicalExam{
+            .fetalPresentationParam{
+                color: red;
+            }
+            .items{
+                align-items: center;
+                display: flex;
+            }
+        }
+        .membranes{
+            .amnioticFluidColorParam{
+                display: flex;
+                .cssClass{
+                    height: 15px;
+                    width: 10px;
+                }
+            }
+        }
+        .concept{ 
+            .conceptus{
+                flex-wrap: nowrap !important;
+                .babis{
+                    border-radius: 3px;
+                    padding: 1px;
+                    margin: 2px;
+                    cursor: pointer;
+                    
+                    border: 2px solid #90A4AE;
+                    background-color: #ECEFF1;
+                    color: #90A4AE;
+                    ion-icon{
+                        margin-top: 1px;
+                    }
+                }
+                .male{
+                    border: 2px solid #03A9F4 !important;
+                    background-color: #E3F2FD !important;
+                    color: #03A9F4 !important;
+                }
+                .female{
+                    border: 2px solid #f48fb1 !important;
+                    background-color: #fce4ec !important;
+                    color: #f48fb1 !important;
+                }
+            }
+        }
+        .pain{
+            .circle{
+                border-radius: 50%;
+                font-size: 1.1rem;
+                border: 1px solid #ccc;
+                min-height: 28px;
+                min-width: 28px;
+                align-items: center;
+                justify-content: center;
+                display: flex;
+            }
+        }
+        .notes{
+            .icon{
+                color: rgb(245, 163, 105);
+            }
+        }
+        .attachments {
+            .data{
+                display: flex;
+                align-items: center;
+                .imgs{
+                    width: 50%;
+                    align-items: center;
+                    display: flex;
+                }
+            }
+        }
+    }
+}

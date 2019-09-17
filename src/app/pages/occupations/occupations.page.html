@@ -1,0 +1,87 @@
+<ion-header>
+  <ion-toolbar mode="ios">
+    <!-- <button class="btnIconMenu" (click)="openMenu()">
+      <ion-icon name="menu"></ion-icon>
+    </button> -->
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title text-center>Assignments</ion-title>
+    <div class="institutionAndSector">
+      <ion-note *ngIf="institutionAndSector">{{institutionAndSector}}
+      </ion-note>
+    </div>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content padding id="occuppations">
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content pullingIcon="arrow-dropdown" pullingText="Pull to refresh" refreshingSpinner="circles"
+      refreshingText="Refreshing...">
+    </ion-refresher-content>
+  </ion-refresher>
+  <ion-segment [(ngModel)]="context" mode="ios">
+    <ion-segment-button (click)="clickSegment('groups')" value="groups" mode="ios">
+      <ion-label class="segment-label-font">Groups</ion-label>
+    </ion-segment-button>
+    <ion-segment-button (click)="clickSegment('positions')" value="positions" mode="ios">
+      <ion-label class="segment-label-font">Positions</ion-label>
+    </ion-segment-button>
+  </ion-segment>
+  <div style="padding-top: 5px" [ngSwitch]="context">
+    <ion-list *ngSwitchCase="'groups'">
+      <div *ngIf="loadingGroups" class="spinner">
+        <ion-spinner></ion-spinner>
+      </div>
+      <div *ngIf="!loadingGroups">
+        <div class="titles border" *ngIf="myGroups.length > 0">
+          <div class="name"><span>Name</span></div>
+          <div class="since"><span>Since</span></div>
+          <div class="status"><span>Status</span></div>
+        </div>
+        <div [ngStyle]="{'animation-delay': (i * 1000) +'ms'}" *ngFor="let group of myGroups; let i = index">
+          <div *ngIf="group.playerToGroups">
+            <ion-item class="border" lines="none" (click)="clickLeaveGroup(group)">
+              <ion-icon *ngIf="group.playerToGroups?.length" color="success" slot="end" name="checkmark-circle-outline">
+              </ion-icon>
+              <ion-label class="position-name"> {{ group?.name }}
+                <div class="date-since">{{ group.playerToGroups[0]?.enteredOn | date:'M/d, h:mma' }}</div>
+              </ion-label>
+            </ion-item>
+          </div>
+          <div *ngIf="!group.playerToGroups">
+            <ion-item lines="none" class="border" (click)="clickEnterGroup(group)">
+              <ion-label class="position-name">{{ group.name }}</ion-label>
+            </ion-item>
+          </div>
+        </div>
+      </div>
+    </ion-list>
+
+    <ion-list *ngSwitchCase="'positions'" ngSelected="selected">
+      <div *ngIf="loadingPositions" class="spinner">
+        <ion-spinner></ion-spinner>
+      </div>
+      <div *ngIf="!loadingPositions">
+        <div *ngFor="let pos of myPositions">
+          <div *ngIf="pos?.occupations.length > 0">
+            <ion-item (click)="clickLeavePosition(pos, occupation)"
+              *ngFor="let occupation of pos.occupations; let i = index">
+              <ion-icon color="success" slot="end" name="checkmark-circle-outline"></ion-icon>
+              <ion-label class="position-name">{{ pos.name }} - Since:
+                {{ occupation.checkinOn | date:'M/d/yy, h:mm a' }}
+              </ion-label>
+            </ion-item>
+          </div>
+          <div *ngIf="pos?.occupations.length == 0">
+            <ion-item (click)="clickEnterPosition(pos)">
+              <ion-label class="position-name">{{ pos.name }}
+              </ion-label>
+            </ion-item>
+          </div>
+        </div>
+      </div>
+    </ion-list>
+  </div>
+
+</ion-content>

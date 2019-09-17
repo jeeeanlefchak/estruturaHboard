@@ -1,0 +1,128 @@
+<ion-header>
+  <ion-toolbar mode="ios">
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-title style="margin-right: 44px;" text-center>Account</ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content id="account">
+  <div *ngIf="!gettingData">
+    <form [formGroup]="formPlayer">
+      <div formGroupName="person">
+        <ion-item>
+          <ion-label position="floating">Prefix</ion-label>
+          <ion-input formControlName="prefix"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label position="floating">Display name</ion-label>
+          <ion-input formControlName="displayName"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label position="floating">First name</ion-label>
+          <ion-input formControlName="firstName"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label position="floating">Middle name</ion-label>
+          <ion-input formControlName="middleName"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label position="floating">Last name</ion-label>
+          <ion-input formControlName="lastName"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label position="floating">Deactivate</ion-label>
+          <ion-checkbox mode='ios' formControlName="deactivatedOn"></ion-checkbox>
+        </ion-item>
+      </div>
+
+      <div class="image">
+        <ion-avatar class="avatar" slot="start" position="floating" [ngClass]="{'img-avatar' : !picture }">
+          <img *ngIf="picture" [src]="domSanitizer.bypassSecurityTrustResourceUrl(picture)">
+        </ion-avatar>
+        <div>
+          <ion-buttons end>
+            <button ion-button (click)="openOptionPicture()">
+              <ion-icon class="edit" name="create"></ion-icon>
+            </button>
+            <button ion-button (click)="picture = '' ">
+              <ion-icon class="trash" name="trash"></ion-icon>
+            </button>
+          </ion-buttons>
+        </div>
+      </div>
+
+      <div class='channel'>
+        <div>
+          <span class="title" (click)="openModalChannel()"> Communication channel <ion-icon mode="ios"
+              name="add-circle-outline"></ion-icon>
+          </span>
+        </div>
+        <div *ngFor="let channels of commChannels">
+          <div *ngIf="!channels.edited && !channels.inactivatedOn" class="channels">
+            <div class="border-left">
+              <span> {{channels?.type?.text}}</span>
+            </div>
+            <div>
+              <span> {{channels.identificator}}</span>
+            </div>
+            <div class="trash">
+              <span (click)="onClickRemoveChannel($event, channels)">
+                <ion-icon name="trash"></ion-icon>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+
+    <h6> User Account</h6>
+    <form [formGroup]="formUserAccountToUniversalUserAccount">
+      <div formGroupName="userAccount">
+        <ion-item>
+          <ion-label position="floating">Email</ion-label>
+          <ion-input formControlName="email"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label position="floating">Phone</ion-label>
+          <ion-input formControlName="mobilePhone"></ion-input>
+        </ion-item>
+        <ion-item lines='full' mode="ios">
+          <ion-label>ownerType</ion-label>
+          <ion-select disabled="true" mode="ios" okText="Okay" cancelText="Dismiss" formControlName="ownerType">
+            <ion-select-option [value]="ownerType" *ngFor="let ownerType of ownerTypeList">{{ownerType.name}}
+            </ion-select-option>
+          </ion-select>
+        </ion-item>
+      </div>
+
+      <ion-item>
+        <ion-label position="floating">Login</ion-label>
+        <ion-input formControlName="login"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label position="floating">Password</ion-label>
+        <ion-input formControlName="password" type="password"></ion-input>
+      </ion-item>
+
+      <ion-item lines='full' mode="ios">
+        <ion-label>Universal user Account</ion-label>
+        <ion-select disabled='true' mode="ios" okText="Okay" cancelText="Dismiss"
+          formControlName="universalUserAccount">
+          <ion-select-option [value]="universal" *ngFor="let universal of universalUserAccountList">{{universal.name}}
+          </ion-select-option>
+        </ion-select>
+      </ion-item>
+
+    </form>
+  </div>
+  <div class="spinner" *ngIf="gettingData">
+    <ion-spinner></ion-spinner>
+  </div>
+</ion-content>
+
+<div class="btns">
+  <ion-spinner class="spinnerSaaving" *ngIf="saving" class="spinner"></ion-spinner>
+  <button *ngIf="!saving" (click)="onSubmit()" color="ligth" class="submit">Ok</button>
+  <button *ngIf="!saving" (click)="back()" color="ligth" class="close">Cancel</button>
+</div>

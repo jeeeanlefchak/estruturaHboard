@@ -1,0 +1,94 @@
+<ion-header>
+  <ion-toolbar mode="ios">
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-title style="margin-right: 44px;" text-center *ngIf="!showSearchBar">Interventions</ion-title>
+
+    <ion-buttons slot="end">
+      <ion-button (click)="clickIconSearchBar()">
+        <ion-icon slot="icon-only" name="search"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+
+    <ion-searchbar #searchPatients animated *ngIf="showSearchBar" (ionCancel)="cancelSearch($event)"
+      (ionChange)="searchAllInterventions($event)" placeholder="Search"></ion-searchbar>
+
+  </ion-toolbar>
+</ion-header>
+<ion-content id="inteventions">
+  <div class="spinner" *ngIf="loading">
+    <ion-spinner></ion-spinner>
+  </div>
+  <div class="container" *ngIf="!loading">
+    <ion-segment [(ngModel)]="context" mode="ios">
+      <ion-segment-button (click)="clickSegment('patientInterventions')" value="patientInterventions" mode="ios">
+        <ion-label class="segment-label-font">Patient interventions</ion-label>
+      </ion-segment-button>
+      <ion-segment-button (click)="clickSegment('groupAndInterventions')" value="groupAndInterventions" mode="ios">
+        <ion-label class="segment-label-font">Interventions</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+
+    <div [ngSwitch]="context">
+
+      <div *ngSwitchCase="'patientInterventions'">
+        <ion-list lines="full">
+          <ion-item *ngFor="let template of patientInterventionList, let index = index"
+            [ngClass]="{'none' : template.crudAction == 4}">
+            <ion-label>
+              {{template.name}}
+            </ion-label>
+            <ion-buttons slot="end">
+              <ion-button (click)="deleteItem(template)">
+                <i class="fas fa-trash-alt"></i>
+              </ion-button>
+            </ion-buttons>
+          </ion-item>
+        </ion-list>
+      </div>
+
+      <div *ngSwitchCase="'groupAndInterventions'">
+        <ion-row *ngFor="let group of groupInterventionList, let i = index">
+          <div>
+            <ion-label class="title">
+              {{group.name}}
+            </ion-label>
+            <div class="interventionTemplate">
+              <div *ngFor="let template of group.interventionTemplates, let index = index"
+                [ngStyle]="{'animation-delay': (index * 10) + 'ms'}" (click)="updateTemplatePatient(template)">
+                <div class="result" [ngClass]="{'itemSelected': template.crudAction == 1 }">
+                  {{template.name}}
+                </div>
+              </div>
+            </div>
+          </div>
+        </ion-row>
+      </div>
+    </div>
+
+    <!-- <ion-row>
+      <div>
+        <ion-label class="title">
+          Patient interventions
+        </ion-label>
+        <div class="interventionTemplate">
+          <div *ngFor="let template of patientInterventionList, let index = index"
+            [ngStyle]="{'animation-delay': (index * 10) + 'ms' }" [ngClass]="{'hide': template.action == 3}"
+            class="result">
+            <span class="templateName">{{template.name}}</span>
+          </div>
+        </div>
+      </div>
+
+    </ion-row> -->
+  </div>
+
+</ion-content>
+
+<div class="btns">
+  <div>
+    <button (click)="onSubmit()" title="Save" class="ok btn">Ok</button>
+    <button (click)="back(false)" class="cancel btn">Back</button>
+  </div>
+</div>

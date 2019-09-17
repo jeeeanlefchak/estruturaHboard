@@ -1,0 +1,78 @@
+<ion-header>
+  <ion-toolbar [ngStyle]="{'background-color': assessmentInstance?.assessmentTemplate?.identityColor}" mode="ios">
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-row>
+      <ion-title style="margin-right: 44px;" text-center>{{assessmentInstance?.assessmentTemplate?.name}}
+      </ion-title>
+    </ion-row>
+    <ion-row>
+      <label class="crudAction">{{assessmentInstance?.id == 0 ? 'New' : assessmentInstance.id }}</label>
+    </ion-row>
+    <ion-toggle color="dark" class="tootleMode" (click)="setModView(modeView)" [(ngModel)]="modeView"></ion-toggle>
+  </ion-toolbar>
+</ion-header>
+
+<div class="panel" *ngIf="!loading">
+  <ion-row *ngIf="!modeView">
+    <div class="detail">
+      <ion-row>
+        <span class="name"> Room {{data?.currentRoom?.shortName}} </span>
+      </ion-row>
+      <ion-row>
+        <span class="patientName">{{data?.patient?.displayName}} </span>
+      </ion-row>
+    </div>
+  </ion-row>
+  <ion-card-subtitle class="detailPatient" *ngIf="modeView">
+    <div>
+      <span *ngIf="data?.currentRoom?.shortName"> Room {{data?.currentRoom?.shortName}}
+      </span>
+    </div>
+    <div>
+      <span *ngIf="data?.patient.id">
+        {{formatId(data?.patient?.id)}}
+        {{data?.patient?.displayName}} </span>
+    </div>
+  </ion-card-subtitle>
+  <ion-item *ngIf="viewTravando">
+    <ion-label>Assessment On</ion-label>
+    <ion-datetime done-text="Ok" [(ngModel)]="assessmentInstance.orderedOn" display-format="MMM DD, YYYY HH:mm">
+    </ion-datetime>
+  </ion-item>
+  <ion-item *ngIf="modeView && viewTravando">
+    <ion-label position="floating">Comments</ion-label>
+    <ion-textarea maxlength="500" [(ngModel)]="assessmentInstance.comments"></ion-textarea>
+  </ion-item>
+</div>
+
+<ion-content id="modal-cervical-exam" padding>
+  <ion-spinner class="spinner" *ngIf="loading"></ion-spinner>
+  <div *ngFor="let parameter of assessmentInstance?.parameters, let i = index">
+    <parameter-inputter *ngIf="!loading" [modeView]="modeView" [index]="i" [assessmentInstance]="assessmentInstance">
+    </parameter-inputter>
+  </div>
+
+  <ion-footer class="rodape">
+    <ion-note color="dark"> <label>Created By: Admin </label></ion-note>
+    <ion-note color="dark" *ngIf="assessmentInstance.id <= 0" class="created"><label>Created On: New</label></ion-note>
+    <ion-note color="dark" *ngIf="assessmentInstance.id > 0" class="created">
+      <label>
+        {{ assessmentInstance?.createdOn ? assessmentInstance?.createdOn : assessmentInstance?.orderedOn | date:'short' }}</label>
+    </ion-note>
+  </ion-footer>
+
+</ion-content>
+
+<div *ngIf="modeView">
+  <ion-buttons slot="end">
+    <ion-button end (click)="onSubmit()" color="primary">Ok</ion-button>
+    <ion-button end (click)="close()" color="ligth">Cancel</ion-button>
+  </ion-buttons>
+</div>
+
+<div *ngIf="!modeView" class="btns">
+  <button (click)="onSubmit()" color="ligth" class="submit">Ok</button>
+  <button (click)="close()" color="ligth" class="close">Cancel</button>
+</div>

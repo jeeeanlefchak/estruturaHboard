@@ -1,0 +1,59 @@
+<ion-header >
+  <ion-toolbar mode="ios">
+    <ion-buttons slot="start">
+      <ion-menu-button ></ion-menu-button>
+    </ion-buttons>
+    
+    <div class="institutionAndSector" *ngIf="!showSearchBar">
+        <ion-note *ngIf="institutionAndSector">{{institutionAndSector}}
+        </ion-note>
+      </div>
+
+    <ion-buttons slot="end">
+      <ion-button (click)="clickIconSearchBar()" >
+        <ion-icon slot="icon-only" name="search"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title text-center *ngIf="!showSearchBar">Staff</ion-title>
+    
+
+    <ion-searchbar animated #searchStaff *ngIf="showSearchBar" (ionCancel)="showSearchBar = false" (ionChange)="filter($event)"
+      placeholder="Search"></ion-searchbar>
+
+  </ion-toolbar>
+</ion-header>
+
+<!-- <ion-searchbar animated (keyup)='filter($event)'>
+</ion-searchbar> -->
+
+<!-- <ion-segment [(ngModel)]="context">
+  <ion-segment-button (click)="clickSegment('global')" value="global">
+    <ion-label class="segment-label-font">Global</ion-label>
+  </ion-segment-button>
+</ion-segment> -->
+
+<ion-content padding id="staff">
+  <!-- [ngSwitch]="context" -->
+  <ion-refresher (ionRefresh)="getSettingBoard($event)">
+    <ion-refresher-content pullingIcon="arrow-dropdown" pullingText="Pull to refresh" refreshingSpinner="circles"
+      refreshingText="Refreshing...">
+    </ion-refresher-content>
+  </ion-refresher>
+  <div style="padding-top: 5px">
+    <!-- *ngSwitchCase="'global'" -->
+    <ion-list>
+      <ion-item class="cardPatient" *ngFor="let data of playerSearching; let i = index" lines="full">
+        <ion-avatar class="avatar" slot="start" position="floating">
+          <img [src]="data?.player?.person?.picture" *ngIf="data?.player?.person?.picture">
+          <ion-icon name="person" *ngIf="!data?.player?.person?.picture" style="font-size: 2.6rem"></ion-icon>
+        </ion-avatar>
+        {{data?.player?.person?.fullName}}
+      </ion-item>
+    </ion-list>
+
+    <!-- <ion-list *ngSwitchCase="'positions'" ngSelected="selected">
+      
+    </ion-list> -->
+  </div>
+
+</ion-content>

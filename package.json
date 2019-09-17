@@ -29,7 +29,15 @@
     "core-js": "^2.5.4",
     "rxjs": "~6.5.1",
     "tslib": "^1.9.0",
-    "zone.js": "~0.9.1"
+    "zone.js": "~0.9.1",
+    "@aspnet/signalr": "^1.1.2",
+    "@auth0/angular-jwt": "^2.1.0",
+    "@ionic-native/camera": "^5.5.1",
+    "@ionic/storage": "^2.2.0",
+    "@ionic-native/file-transfer": "^5.5.1",
+    "@ionic-native/document-viewer": "^5.5.1",
+    "@ionic-native/file": "^5.5.1",
+    "moment": "^2.24.0"
   },
   "devDependencies": {
     "@angular-devkit/architect": "~0.801.2",

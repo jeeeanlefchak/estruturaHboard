@@ -1,0 +1,92 @@
+#parameter-inputter{
+    .parametrs{
+        ion-range{
+            padding: 0 0 0 8px !important;
+        }
+        // .options{
+        //     margin-top: -10px;
+        //     padding-bottom: 10px;
+        // }
+        // .item{
+        //     margin: -10px;
+        // }
+        .title{
+            font-weight: 600;
+            font-size: 0.850rem;
+            color: rgb(124,114,108);
+            margin-left: 1px;
+        }
+        .dateTupe6{
+            .hourAndMinute{
+                display: block;
+                .hour{
+                    display: flex;
+                    flex-wrap: wrap;
+                }
+                .minute{
+                    display: flex;
+                    flex-wrap: wrap;
+                }
+            }
+        }
+        .dataType8{
+            .default{
+                display: flex;
+                flex-wrap: wrap;
+                margin: 3px 0 3px 0;
+                margin-left: -1px;
+                .result{
+                    
+                    cursor: pointer;
+                    span{
+                        color : rgb(124,114,108);
+                    }
+                }
+            }
+            .date806{
+                display: flex;
+                flex-wrap: wrap;
+                margin-bottom: 6px;
+                margin-left: -1px;
+                .result{
+                    border: 1px solid rgb(124,144,108);
+                    border-radius: 5px;
+                    padding: 5px;
+                    margin: 2px;
+                    font-size: 0.850rem;
+                    span{
+                        color : rgb(124,114,108);
+                    }
+                }
+                .itemSelected{
+                    background-color: rgb(163,210,191);
+                    color: white !important;
+                }
+            }
+            .switch810{
+                .itemsRadio{
+                    display: flex;
+                    margin-right: 3%;
+                    align-items: center;
+                    flex-wrap: wrap;
+                    ion-radio{
+                        margin: 2px;
+                    }
+                }
+            }
+        }
+        .result{
+            border: 1px solid #7c906c;
+            border-radius: 5px;
+            padding: 3px 5px;
+            margin: 2px;
+            font-size: 0.950rem;
+            justify-content: center;
+            display: flex;
+        }
+        .itemSelected{
+            background-color: rgb(152,212,203);
+            color: white !important;
+        }
+    }
+}

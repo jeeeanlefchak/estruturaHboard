@@ -1,0 +1,88 @@
+.btns{
+    text-align: end;
+    button{
+        border-radius: 8px;
+        color: white;
+        min-width: 10%;
+        min-height: 29px;
+        margin-right: 1%;
+        margin-bottom: 1px;
+    }
+    .submit{
+        background: rgb(67, 87, 104);
+    }
+    .close{
+        background: rgb(124, 114, 108);
+    }
+    .spinnerSaaving{
+        margin-right: 5%;
+    }
+}
+
+#account{
+    .image{
+        justify-content: center;
+        align-items: center;
+        display: flex;
+        ion-buttons{
+            display: grid;
+            button{
+                background-color: transparent;
+            }
+            .trash{
+                color: red;
+            }
+            .edit{
+                color : #3880ff; 
+            }
+        }
+    }
+    .channel{
+        margin: 14px 0 17px 0;
+        border: solid 1px grey;
+        // border-left: solid 3px grey;
+        // align-items: center;
+        // justify-content: center;
+        // display: flex;
+        .title{
+            align-items: center;
+            justify-content: center;
+            display: flex;
+        }
+        ion-icon{
+            color : #3880ff;
+        }
+        .channels{
+            display: flex;
+            div{
+                width: 100%;
+                border: solid 1px grey;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                overflow: hidden;
+                span{
+                    margin-left: 6px;
+                }
+            }
+            .border-left{
+                border-left: solid 3px grey;
+            }
+            .trash{
+                width: 17% !important;
+                ion-icon{
+                    color: red !important;
+                }
+            }
+        }
+    }
+    .spinner{
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        align-items: center;
+        justify-content: center;
+        display: flex;
+    }
+}

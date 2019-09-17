@@ -1,0 +1,339 @@
+<ion-header>
+  <ion-toolbar mode="ios">
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-title style="margin-right: 44px;" text-center>Admission</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<div class="detail" *ngIf="!loadingData">
+  <ion-row>
+    <span class="name"> Room {{data?.room?.shortName}} </span>
+  </ion-row>
+  <ion-row>
+    <span class="patientName"> {{data?.patient?.displayName}} </span>
+  </ion-row>
+</div>
+
+<ion-content id="room">
+  <ion-refresher (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content pullingIcon="arrow-dropdown" pullingText="Pull to refresh" refreshingSpinner="circles"
+      refreshingText="Refreshing...">
+    </ion-refresher-content>
+  </ion-refresher>
+
+  <ion-spinner *ngIf="loadingData" class="spinner"></ion-spinner>
+  <div class="main" *ngIf="!loadingData">
+    <!-- <ion-row>
+      <div class="detail">
+        <ion-row>
+          <span class="name"> Room {{data?.room?.shortName}} </span>
+        </ion-row>
+        <ion-row>
+          <span class="patientName"> {{data?.patient?.displayName}} </span>
+        </ion-row>
+      </div>
+    </ion-row> -->
+
+    <ion-row>
+      <ion-col>
+        <div class="nursing card">
+          <ion-row>
+            <ion-note class="title">Nursing </ion-note>
+          </ion-row>
+          <div *ngFor="let nursing of data?.nursing">
+            <div class="space">
+              <ion-icon name="contact"></ion-icon> <span> {{nursing?.person?.displayName }} </span> <span
+                class="position"> &nbsp; {{nursing?.positionOccupations[0]?.position?.shortName}} </span>
+            </div>
+            <div class="space">
+              <ion-icon name="battery-charging"></ion-icon>
+              {{ ( !nursing.fte ? '' : nursing?.fte[0] != undefined ? nursing?.fte[0]?.assignedToAdmission : '0.0').toFixed(2) }}
+              <ion-icon name="call"></ion-icon>
+              <span>
+                {{nursing?.intercommDeviceAllocations !== undefined ? nursing?.intercommDeviceAllocations[nursing?.intercommDeviceAllocations.length -1]?.intercommDevice?.callIdentificator : ''}}
+              </span>
+            </div>
+          </div>
+        </div>
+      </ion-col>
+      <ion-col>
+        <div class="physician card">
+          <ion-row>
+            <ion-note class="title">Physician </ion-note>
+          </ion-row>
+          <ion-row>
+            <div class="person" *ngFor="let physician of data?.physician; let i = index">
+              <span
+                style="cursor: pointer; font-size: 1rem; line-height: 1rem; padding: 1px 2px 1px 2px; border-radius: 0.3rem!important;  margin-right: 1px;"
+                [ngStyle]="{'background-image': physician?.positionOccupations[0].position?.cssClassContent != undefined ? 'linear-gradient(#fff, ' + physician?.positionOccupations[0].position?.avatarColor + ')' : 'linear-gradient(#fff,#fff)'}">{{physician?.person?.displayName}}</span>
+              <!-- <span *ngFor="let physician of data?.physician; let i = index"> {{physician?.person?.displayName}}
+                <span class="point" *ngIf="data?.physician?.length -1> i">; </span>
+              </span> -->
+            </div>
+          </ion-row>
+        </div>
+      </ion-col>
+    </ion-row>
+
+
+    <ion-row>
+      <ion-col>
+        <div class="admission card">
+          <ion-row>
+            <ion-note class="title">Admission </ion-note>
+          </ion-row>
+          <ion-row>
+            <ion-note> {{data?.admission?.admittedOn | date:'MM/ddEEE hh:mma' }} </ion-note>
+          </ion-row>
+          <ion-row>
+            <div class="comments">
+              <span>
+                {{data?.admission?.comments }}
+              </span>
+            </div>
+          </ion-row>
+          <div>
+            <ion-row>
+              <ion-col>
+                <b [ngStyle]="data?.admission?.history?.color"> {{data?.admission?.history?.shortName}} </b>
+              </ion-col>
+              <ion-col>
+                <b [ngStyle]="data.admission.priority?.color"> {{data?.admission?.priority?.shortName}} </b>
+              </ion-col>
+            </ion-row>
+            <ion-row>
+              <ion-col>
+                <b [ngStyle]="data?.admission?.stage?.color"> {{data?.admission?.stage?.shortName}} </b>
+              </ion-col>
+              <ion-col>
+                <b> {{data?.admission?.fte?.shortName}} </b>
+              </ion-col>
+            </ion-row>
+          </div>
+        </div>
+      </ion-col>
+      <ion-col>
+        <div class="pregnancy card">
+          <ion-row>
+            <ion-note class="title">Pregnancy </ion-note>
+          </ion-row>
+          <ion-row class="pregnancy">
+            <div class="data-pregnancy" (click)="openAssessmentEditor(data, 'OBSTETRIC_HISTORY', 'pregnancy')">
+              <span *ngIf="data?.pregnancy?.obstetricHistory?.gravityParam?.resultText" class="space">
+                G{{data?.pregnancy?.obstetricHistory?.gravityParam?.resultText}}
+              </span>
+              <span *ngIf="data?.pregnancy?.obstetricHistory?.parityParam?.resultText" class="space">
+                P{{data?.pregnancy?.obstetricHistory?.parityParam?.resultText}}
+              </span>
+              <span *ngIf="data?.pregnancy?.obstetricHistory?.cSectionsParam?.resultText" class="space">
+                C{{data?.pregnancy?.obstetricHistory?.cSectionsParam?.resultText}}
+              </span>
+              <span *ngIf="data?.pregnancy?.obstetricHistory?.abortionsParam?.resultText" class="space">
+                A{{data?.pregnancy?.obstetricHistory?.abortionsParam?.resultText}}
+              </span>
+            </div>
+          </ion-row>
+          <div (click)="openAssessmentEditor(data, 'PREGNANCY', 'pregnancy')">
+            <ion-row>
+              <div class="calculatedPreg"
+                [ngStyle]="{'color':  data.pregnancy.calculatedPreg.weeks <=36 && data.pregnancy.calculatedPreg.days <=6 ? '#CC0000' : '#000000'}">
+                <b class="weeks">{{data?.pregnancy?.calculatedPreg?.weeks}}</b>
+                <b class="days">{{data?.pregnancy?.calculatedPreg?.days}}</b>
+              </div>
+            </ion-row>
+            <ion-row *ngIf="data?.pregnancy?.calculatedPreg?.weeks || data?.pregnancy?.calculatedPreg?.days ">
+              <ion-note class="byDD">by DD</ion-note>
+            </ion-row>
+            <ion-row>
+              <div class="numberOfFetus" *ngIf="data?.pregnancy?.numberOfFetusParam?.resultText">
+                <b> {{
+                  data?.pregnancy?.numberOfFetusParam?.resultText == '1' ? 'One' :
+                  data?.pregnancy?.numberOfFetusParam?.resultText == '2' ? 'Twins' : 
+                  data?.pregnancy?.numberOfFetusParam?.resultText == '3' ? 'Triplets' :
+                  data?.pregnancy?.numberOfFetusParam?.resultText == '4' ? 'Quads' :
+                  +Quads
+                 }}</b>
+              </div>
+            </ion-row>
+          </div>
+        </div>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col>
+        <div class="conditions card" (click)="openPage('condition/'+ data.room.id)">
+          <ion-row>
+            <ion-note class="title">Conditions </ion-note>
+          </ion-row>
+          <div class="condition">
+            <div *ngFor="let condition of data?.conditions; let i = index">
+              <div class="item" *ngIf="condition?.displayName != 'Pregnancy'">
+                <span [ngStyle]="condition?.cssClass">
+                  {{condition?.displayName}}
+                </span>
+                <span class="comments" *ngIf="condition?.comments"> &nbsp; ({{condition?.comments}}) </span>
+                <span style="margin-right: 4px;" *ngIf="i < data?.conditions.length - 2 ">;</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </ion-col>
+    </ion-row>
+
+    <ion-row>
+      <ion-col>
+        <div class="cervicalExam card" (click)="openAssessmentEditor(data, 'CERVICAL_EXAM', 'cervicalExam')">
+          <ion-row>
+            <ion-note class="title">Cervical Exam </ion-note>
+          </ion-row>
+          <div class="cervical">
+            <ion-row>
+              <ion-note class="date"> {{data?.cervicalExam?.orderedOn | date : 'MMM dd h:mm a' }}</ion-note>
+            </ion-row>
+            <ion-row *ngIf="data?.cervicalExam?.fetalPresentationParam?.resultText?.toUpperCase() != 'CEPHALIC'">
+              <span class="fetalPresentationParam"> {{data?.cervicalExam?.fetalPresentationParam?.resultText}} </span>
+            </ion-row>
+            <div class="items">
+              <b style="margin-left: 2%" *ngIf="data?.cervicalExam?.cervicalDilationParam?.resultText" [ngStyle]="{'color': data.cervicalExam.cervicalDilationParam?.resultText === '8' ||
+              data?.cervicalExam?.cervicalDilationParam?.resultText === '9' || data?.cervicalExam?.cervicalDilationParam?.resultText === '10' ?
+              'red' : 'black'}">
+                {{data?.cervicalExam?.cervicalDilationParam?.resultText}}</b>
+              <b
+                *ngIf="(data?.cervicalExam?.cervicalDilationParam?.resultText && data?.cervicalExam?.cervicalEffacementParam?.resultText) ||
+                      (data?.cervicalExam?.fetalStationParam?.resultText && data?.cervicalExam?.cervicalDilationParam?.resultText && 
+                      !(data?.cervicalExam?.cervicalDilationParam?.resultText && data?.cervicalExam?.cervicalEffacementParam?.resultText) )">/</b>
+              <b *ngIf="data?.cervicalExam?.cervicalEffacementParam?.resultText">
+                {{(data?.cervicalExam?.cervicalEffacementParam?.resultText).replace('%','')}}</b>
+              <b
+                *ngIf="data?.cervicalExam?.cervicalEffacementParam?.resultText && data?.cervicalExam?.fetalStationParam?.resultText">/</b>
+              <b
+                *ngIf="data?.cervicalExam?.fetalStationParam?.resultText">{{data?.cervicalExam?.fetalStationParam?.resultText}}</b>
+            </div>
+          </div>
+        </div>
+      </ion-col>
+      <ion-col>
+        <div class="membranes card" (click)="openAssessmentEditor(data, 'PREGNANCY_MEMBRANES', 'membranes')">
+          <ion-row>
+            <ion-note class="title">Membranes </ion-note>
+          </ion-row>
+          <ion-note> {{data?.membranes?.timeOfRuptureParam?.resultText | date : 'MMM dd h:mm a' }}</ion-note>
+          <ion-row>
+            <div class="amnioticFluidColorParam">
+              <div class="cssClass" [ngStyle]="data?.membranes?.amnioticFluidColorParam?.cssClass">
+              </div>
+              <div>
+                <span>
+                  {{data?.membranes?.amnioticFluidColorParam?.resultText}}
+                </span>
+              </div>
+            </div>
+          </ion-row>
+          <ion-row>
+            <span> {{data?.membranes?.amnioticFluidOdorParam?.resultText}}</span>
+          </ion-row>
+          <ion-row>
+            <span [ngStyle]="data?.membranes?.typeOfRuptureParam?.cssClass">
+              {{data?.membranes?.typeOfRuptureParam?.resultText}}</span>
+          </ion-row>
+        </div>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col>
+        <div class="intervention card" (click)="openPage('intervention/'+ data.room.id )">
+          <ion-row>
+            <ion-note class="title">Intervention </ion-note>
+          </ion-row>
+          <ion-label *ngFor="let intervention of data.interventions">
+            {{intervention?.name}};
+          </ion-label>
+        </div>
+      </ion-col>
+    </ion-row>
+
+    <ion-row>
+      <ion-col>
+        <div class="concept card" (click)="openAssessmentEditor(data, 'POST_DELIVERY_NEONATE', 'delivery')">
+          <ion-row>
+            <ion-note class="title">Delivery </ion-note>
+          </ion-row>
+          <ion-note> {{data?.delivery?.orderedOn | date : 'MMM dd h:mm a' }}</ion-note>
+          <ion-row>
+            <span> {{data?.delivery?.deliveryRouteParam?.resultText}}</span>
+          </ion-row>
+          <ion-row>
+            <div class="conceptus" *ngFor="let concept of data?.delivery?.conceptus">
+              <div class="babis" [ngClass]="{'male' : concept.sex == 0, 'female' : concept.sex == 1}">
+                <ion-icon name="body"></ion-icon>
+                <span>{{concept?.name}}</span>
+              </div>
+            </div>
+          </ion-row>
+        </div>
+      </ion-col>
+      <ion-col>
+        <div class="pain card" (click)="openAssessmentEditor(data, 'LABOR_AND_DELIVERY_ANESTHESIOLOGY_MANAGEMENT', 'pain')">
+          <ion-row>
+            <ion-note class="title">Pain </ion-note>
+          </ion-row>
+          <ion-row>
+            <ion-note> {{data?.pain?.painCheck?.orderedOn | date : 'MMM dd h:mm a' }}</ion-note>
+          </ion-row>
+          <ion-row>
+            <div class="circle" [ngStyle]="data?.pain?.painManagement?.painScaleParam?.cssClass">
+              <span> {{data?.pain?.painManagement?.painScaleParam?.resultText}}</span>
+            </div>
+          </ion-row>
+        </div>
+      </ion-col>
+    </ion-row>
+
+    <ion-row>
+      <ion-col>
+        <div class="notes card">
+          <ion-row>
+            <ion-note class="title">Notes </ion-note>
+          </ion-row>
+          <div *ngFor="let note of data?.notes">
+            <ion-icon class="icon" name="clipboard"></ion-icon>
+            {{note?.createdOn | date : 'MMM dd h:mm a'}}; {{note?.text}}
+          </div>
+        </div>
+      </ion-col>
+    </ion-row>
+
+    <ion-row>
+      <ion-col>
+        <div class="attachments card">
+          <ion-row>
+            <ion-note class="title">Attachments </ion-note>
+          </ion-row>
+          <div *ngIf="attachmentsData">
+            <div *ngFor="let attachment of attachmentsData" class="data">
+              <div class="imgs">
+                <!-- <img *ngIf="base64data" [src]="base64data" alt="Docs"
+                  height="32" width="32"> -->
+                <img *ngIf="attachment.extension.toUpperCase() == 'DOC'" src="../../../assets/img/fileTypes/doc32.png"
+                  alt="Doc" height="32" width="32">
+                <img *ngIf="attachment.extension.toUpperCase() == 'PDF'" src="../../../assets/img/fileTypes/pdf32.png"
+                  alt="Pdf" height="32" width="32">
+                <img *ngIf="attachment.extension.toUpperCase() == 'TXT'" src="../../../assets/img/fileTypes/txt32.png"
+                  alt="Txt" height="32" width="32">
+                <img *ngIf="(attachment.extension.toUpperCase() == 'JPG') || (attachment.extension == 'png')"
+                  src="../../../../assets/img/fileTypes/img32.png" alt="Png" height="32" width="32">
+
+                <a class="link-button" (click)="clickAttachmentName(attachment)">{{ attachment.name }}</a>
+              </div>
+              <div>
+                {{ attachment.createdOn | date:'MM/ddEEE hh:mma' }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </ion-col>
+    </ion-row>
+  </div>
+</ion-content>

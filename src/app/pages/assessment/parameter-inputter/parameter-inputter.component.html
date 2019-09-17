@@ -1,0 +1,284 @@
+<div id="parameter-inputter">
+  <div [ngSwitch]="assessmentInstance?.parameters[index]?.parameterTemplate?.dataType" *ngIf="!modeView"
+    class="parametrs">
+    <ion-label class="title" *ngIf="assessmentInstance?.parameters[index]?.parameterTemplate?.dataType != 1">
+      {{assessmentInstance?.parameters[index]?.parameterTemplate?.displayName.toUpperCase()}}
+
+      <i *ngIf="assessmentInstance?.parameters[index]?.parameterTemplate?.dataType == 100"
+        style="color:#1a7acd; cursor: pointer" class="fal fa-plus-circle"></i>
+      <!-- (click)="ContextMenuAddInstanceShow($event)" -->
+
+    </ion-label>
+    <ion-label class="title" position="floating"
+      *ngIf="assessmentInstance?.parameters[index]?.parameterTemplate?.dataType == 1">
+      {{assessmentInstance?.parameters[index]?.parameterTemplate?.displayName.toUpperCase()}}
+    </ion-label>
+
+    <div *ngSwitchCase="1">
+      <div [ngSwitch]="assessmentInstance?.parameters[index]?.parameterTemplate?.inputTypeMobile">
+        <div *ngSwitchDefault>
+          <ion-item>
+            <ion-textarea class="item" maxlength="500" (ionBlur)="setText($event)">
+            </ion-textarea>
+          </ion-item>
+        </div>
+      </div>
+    </div>
+
+    <div *ngSwitchCase="2">
+      <div [ngSwitch]="assessmentInstance?.parameters[index]?.parameterTemplate?.inputTypeMobile">
+        <div *ngSwitchDefault>
+          <ion-item>
+            <ion-input [(ngModel)]="weekDays.weeks" (blur)="changeDaysAndWeeks($event)" type="number" min="0" max="42"
+              style="font-size: 1.5rem; height: 25px;" placeholder="Weeks"
+              [ngClass]="{'is-invalid' : weekDays?.weeks > 42 || weekDays?.weeks < 0}"></ion-input>
+
+            <ion-input [(ngModel)]="weekDays.days" (blur)="changeDaysAndWeeks($event)" type="number" min="0" max="6"
+              style="font-size: 1.5rem; height: 25px;" placeholder="Days"
+              [ngClass]="{'is-invalid' : weekDays?.days > 6 || weekDays?.days < 0}"></ion-input>
+          </ion-item>
+        </div>
+      </div>
+    </div>
+
+    <div *ngSwitchCase="3">
+      <div [ngSwitch]="assessmentInstance?.parameters[index]?.parameterTemplate?.inputTypeMobile">
+        <div *ngSwitchDefault>
+        </div>
+        <div *ngSwitchCase="112">
+          <ion-input type="number" value="0"
+            [(ngModel)]="assessmentInstance?.parameters[index]?.parameterTemplate?.results[0].resultText"
+            (click)="numericOnCreated($event)" (ionChange)="numericOnChanged($event)"></ion-input>
+        </div>
+        <div *ngSwitchCase="113">
+          <ion-row>
+            <ion-col size="8">
+              <select>
+                <option>Gr</option>
+                <option>lb</option>
+              </select>
+            </ion-col>
+            <ion-col size="2">
+              LB
+            </ion-col>
+            <ion-col size="2">
+              OZ
+            </ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-col size="8">
+              <ion-input type="number" value="0"
+                [(ngModel)]="assessmentInstance?.parameters[index]?.parameterTemplate?.results[0].resultText"
+                (click)="numericOnCreated($event)" (ionChange)="numericOnChanged($event)"></ion-input>
+            </ion-col>
+            <ion-col size="2">
+              <span *ngIf="labelError.length <= 0">{{labelCompositeValue.intPart}}</span>
+            </ion-col>
+            <ion-col size="2">
+              <span *ngIf="labelError.length <= 0">{{labelCompositeValue.decPart}}</span>
+            </ion-col>
+          </ion-row>
+        </div>
+      </div>
+    </div>
+
+    <div *ngSwitchCase="6" class="dateTupe6">
+      <div [ngSwitch]="assessmentInstance?.parameters[index]?.parameterTemplate?.inputTypeMobile">
+        <div *ngSwitchDefault class="hourAndMinute">
+          <div class="hour">
+            <div class="result" *ngFor="let h of [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]"
+              [ngClass]="{'itemSelected': time?.hour == h }" (click)="selectedHourAndMinute(h , 'HOUR')">
+              {{ h }} <span *ngIf="time?.minute != null && time?.hour == h">
+                :{{time?.minute}}</span>
+            </div>
+            <div class="result btnPMAM btn btn-dark"
+              (click)="time.AM = !time.AM; selectedHourAndMinute(time?.minute ? time?.minute : 0, 'MINUTE')">
+              {{ time?.AM ? 'AM' : 'PM' }}</div>
+          </div>
+          <div class="minute" *ngIf="time?.showMinutes">
+            <div class="result" *ngFor="let m of [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55]"
+              [ngClass]="{'itemSelected': time?.minute == m }" (click)="selectedHourAndMinute(m , 'MINUTE')">
+              {{ m }}
+            </div>
+          </div>
+
+          <!-- <ion-item>
+            <ion-datetime display-format="D/M/YYYY h,m a"
+              [(ngModel)]="assessmentInstance?.parameters[index]?.results[0].resultText">
+            </ion-datetime>
+          </ion-item> -->
+        </div>
+        <div *ngSwitchCase="603">
+          <ion-item>
+            <ion-datetime display-format="D/M/YYYY h,m a"
+              [(ngModel)]="assessmentInstance?.parameters[index]?.parameterTemplate?.results[0].resultText">
+            </ion-datetime>
+          </ion-item>
+        </div>
+        <div *ngSwitchCase="810">
+          <ion-item>
+            <ion-datetime display-format="D/M/YY h,m a"
+              [(ngModel)]="assessmentInstance?.parameters[index]?.parameterTemplate?.results[0].resultText">
+              <!-- (ionChange)="updateDate(parameterTemplate?.options, $event)" -->
+            </ion-datetime>
+          </ion-item>
+        </div>
+      </div>
+    </div>
+    <div *ngSwitchCase="7">
+      <div [ngSwitch]="assessmentInstance?.parameters[index]?.parameterTemplate?.inputTypeMobile">
+        <div [ngSwitch]="assessmentInstance?.parameters[index]?.parameterTemplate.inputType">
+          <div *ngSwitchDefault class="default">
+            <div [ngClass]="{'itemSelected': assessmentInstance?.parameters[index].results[0]?.resultText == 'Yes'}"
+              class="result" (click)="markItemSingle({ id : 0, resultText : 'Yes' })">
+              Yes
+            </div>
+            <div [ngClass]="{'itemSelected': assessmentInstance?.parameters[index].results[0]?.resultText  == 'No'}"
+              class="result" (click)="markItemSingle({ id : 0, resultText : 'No' })">
+              No
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div *ngSwitchCase="8" class="dataType8">
+      <div [ngSwitch]="assessmentInstance?.parameters[index]?.parameterTemplate?.inputTypeMobile">
+        <div *ngSwitchDefault>
+          <div class="default">
+            <div [ngClass]="{'checkboxSelected': option.checked}" class="result" (click)="markItemMulti(option)"
+              *ngFor="let option of assessmentInstance?.parameters[index]?.parameterTemplate?.options">
+              {{option.displayName}}
+            </div>
+          </div>
+        </div>
+        <!-- <div *ngSwitchCase="810">
+          <div class="switch810"> -->
+        <!-- <ion-radio-group>
+              <div>
+                <div *ngFor="let option of parameterTemplate?.options">
+                  <ion-checkbox (click)="assessmentInstance.parameters[index]['resultOption'] = option">
+                  </ion-checkbox>
+                  {{option.name}}
+                </div>
+              </div>
+            </ion-radio-group> -->
+        <!-- <ion-radio-group class="itemsRadio">
+              <ion-item *ngFor="let option of parameterTemplate?.options" lines="none">
+                <ion-label>{{option?.name}}</ion-label>
+                <ion-radio slot="start" mode="md"
+                  (click)="assessmentInstance.parameters[index]['resultOption'] = option"></ion-radio>
+              </ion-item>
+            </ion-radio-group> -->
+        <!-- <div class="itemCheckBox" *ngFor="let option of parameterTemplate?.options">
+                            <ion-checkbox mode="ios" [checked]="assessmentInstance.parameters[index]['resultOption'] == option"
+                                (click)="updateRadioCheckBox(option.id, parameterTemplate?.options)">
+                            </ion-checkbox>
+                            <ion-label>{{option?.name}}</ion-label>
+                        </div> -->
+        <!-- </div>
+        </div> -->
+
+        <div *ngSwitchCase="806" class="date806">
+          <div [ngClass]="{'itemSelected': assessmentInstance.parameters[index]['resultOption'] == option}"
+            class="result" (click)="assessmentInstance.parameters[index]['resultOption'] = option"
+            *ngFor="let option of assessmentInstance?.parameters[index]?.parameterTemplate?.options">
+            {{option.displayName}}
+          </div>
+        </div>
+      </div>
+    </div>
+    <div *ngSwitchCase="9">
+      <div [ngSwitch]="assessmentInstance?.parameters[index]?.parameterTemplate?.inputTypeMobile">
+        <div *ngSwitchDefault>
+          <ion-radio-group>
+            <div>
+              <div *ngFor="let option of assessmentInstance?.parameters[index]?.parameterTemplate?.options">
+                <ion-checkbox
+                  (click)="assessmentInstance?.parameters[index]?.parameterTemplate['resultOption'] = option">
+                </ion-checkbox>
+                {{option.name}}
+              </div>
+            </div>
+          </ion-radio-group>
+        </div>
+      </div>
+    </div>
+
+    <div *ngSwitchCase="100">
+      <div>
+        <span *ngFor="let instance of assessmentInstance?.parameters[index]?.parameterTemplate?.assessmentInstances">
+          {{ instance.orderedOn | date: 'MMM/dd/yyyy (EEE) h:mm a' }}
+          <button (click)="assessmentInstanceSelectionChange({action: 'DELETE', data: data})" ejs-button
+            cssClass="e-round e-small">
+            <i style="color:#FFFFFF;" class="fal fa-trash-alt"></i>
+          </button>
+          <button (click)="assessmentInstanceSelectionChange({action: 'EDIT', data: data})" ejs-button
+            cssClass="e-round e-small">
+            <i style="color:#FFFFFF;" class="fal fa-edit"></i>
+          </button>
+        </span>
+
+      </div>
+    </div>
+
+    <div [ngSwitch]="assessmentInstance?.parameters[index]?.parameterTemplate?.inputTypeMobile">
+      <div *ngSwitchCase="803">
+        <ion-row>
+          <ion-range pin="true"
+            [min]="assessmentInstance?.parameters[index]?.parameterTemplate?.options ? minValueRange(assessmentInstance?.parameters[index]?.parameterTemplate?.options) : assessmentInstance?.parameters[index]?.parameterTemplate?.minValue"
+            [max]="assessmentInstance?.parameters[index]?.parameterTemplate?.options ? maxValueRange(assessmentInstance?.parameters[index]?.parameterTemplate?.options) : assessmentInstance?.parameters[index]?.parameterTemplate?.maxValue"
+            [step]="1" snaps="true" color="danger"
+            (ionChange)="assessmentInstance?.parameters[index]?.parameterTemplate?.options ? updatePro(assessmentInstance?.parameters[index]?.parameterTemplate?.options, $event) : setValue($event)">
+          </ion-range>
+        </ion-row>
+      </div>
+      <div *ngSwitchCase="101">
+        <ion-item *ngSwitchCase="101">
+          <ion-textarea autoresize
+          (ionBlur)="setText($event)">
+          </ion-textarea>
+        </ion-item>
+      </div>
+      <!-- <div *ngSwitchCase="2"> 
+                <ion-select [interfaceOptions]="customActionSheetOptions" interface="action-sheet" placeholder="Select One">
+                <ion-select-option value="red">Red</ion-select-option>
+                <ion-select-option value="purple">Purple</ion-select-option>
+                <ion-select-option value="yellow">Yellow</ion-select-option>
+                <ion-select-option value="orange">Orange</ion-select-option>
+                <ion-select-option value="green">Green</ion-select-option>
+              </ion-select> 
+            </div>-->
+    </div>
+
+    <!-- <div class="parametrs" *ngIf="modeView" [ngStyle]="{'animation-delay': (index * 1000) +'ms'}">
+            <ion-item class="item">
+
+                <ion-select [(ngModel)]="assessmentInstance?.parameters[index]?.results[0]"
+                    *ngIf="parameterTemplate.dataType != 1">
+                    <ion-select-option *ngFor="let options of parameterTemplate?.options" [value]="options">
+                        {{options.displayName}}</ion-select-option>
+                </ion-select>
+            </ion-item>
+        </div> -->
+  </div>
+  <div *ngIf="modeView">
+    <div class="parametrs" *ngIf="modeView" [ngStyle]="{'animation-delay': (index * 1000) +'ms'}">
+      <ion-item class="item">
+        <ion-label *ngIf="assessmentInstance?.parameters[index]?.parameterTemplate?.dataType != 1">
+          {{assessmentInstance?.parameters[index]?.parameterTemplate?.displayName}}
+        </ion-label>
+        <ion-label position="floating" *ngIf="assessmentInstance?.parameters[index]?.parameterTemplate?.dataType == 1">
+          {{assessmentInstance?.parameters[index]?.parameterTemplate?.displayName}}
+        </ion-label>
+        <ion-select (ionChange)="setValue($event)"
+          *ngIf="assessmentInstance?.parameters[index]?.parameterTemplate?.dataType != 1">
+          <ion-select-option *ngFor="let options of assessmentInstance?.parameters[index]?.parameterTemplate?.options"
+            [value]="options">
+            {{options.displayName}}</ion-select-option>
+        </ion-select>
+        <ion-textarea class="item" *ngIf="assessmentInstance?.parameters[index]?.parameterTemplate?.dataType == 1"
+          maxlength="500" [(ngModel)]="assessmentInstance?.parameters[index]?.results[0].resultText"></ion-textarea>
+      </ion-item>
+    </div>
+  </div>
+</div>

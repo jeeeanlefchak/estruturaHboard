@@ -1,0 +1,294 @@
+@keyframes flickerAnimation {
+	0%   { opacity:1; }
+	50%  { opacity:0.2; }
+	100% { opacity:1; }
+}
+@-o-keyframes flickerAnimation{
+	0%   { opacity:1; }
+	50%  { opacity:0.2; }
+	100% { opacity:1; }
+}
+@-moz-keyframes flickerAnimation{
+	0%   { opacity:1; }
+	50%  { opacity:0.2; }
+	100% { opacity:1; }
+}
+@-webkit-keyframes flickerAnimation{
+	0%   { opacity:1; }
+	50%  { opacity:0.2; }
+	100% { opacity:1; }
+}
+
+.institutionAndSector{
+    width: 100%;
+	text-align: center;
+	ion-note{
+		font-size: 0.50rem;
+		font-weight: 300;
+		color: black;
+	}
+}
+
+.panel{
+	margin-top: 8px;
+	background: white;
+}
+
+.toolbar{
+	.modeSelected{
+		display: flex;
+		justify-content: center;
+	}
+	.iconWifi{
+		margin-right: 10px;
+		color: red;
+		-webkit-animation: flickerAnimation 1s infinite;
+		-moz-animation: flickerAnimation 1s infinite;
+		-o-animation: flickerAnimation 1s infinite;
+		 animation: flickerAnimation 1s infinite;
+	}
+}
+
+#app-patients{
+	.patients{
+		.spinner{
+			position: absolute;
+			bottom: 0;
+			z-index: 1;
+			left: 0;
+			right: 0;
+			top: 0;
+			/* text-align: center; */
+			/* align-items: center; */
+			justify-content: center;
+			display: flex;
+			align-items: center;
+		}
+		.messageAssignToPatient{
+			text-align: center;
+			margin-top: 10%;
+		}
+		ion-checkbox{
+			--size  : 18px; // tamanho do checkbox do handoff
+		}
+		ion-grid{
+			ion-col{
+				padding-left: 0;
+    			padding-right: 0;
+			}
+		}
+		margin: -6px;
+		.bordCardExpanded{
+			border-radius: 10px 10px 0px 0px !important;
+		}
+		.card{
+			border-radius: 10px;
+			margin-bottom: 6px;
+			.icon{
+				align-items: center;
+				justify-content: center;
+				display: grid;
+				/* flex-direction: row; */
+				/* flex-wrap: wrap; */
+				/* margin-top: 8%; */
+				.play{
+					-webkit-transform: rotate(90deg);
+				}
+			}
+			.routed{
+				-webkit-transform: rotate(145deg) !important;
+			}
+			.pregnancy{
+				// text-align: center;
+				padding: 0;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				.calculatedPreg{
+					// font-size: 1.2rem;
+					.weeks{
+						display: flex;
+						align-items: center;
+						justify-content: center;
+						.days{
+							font-size: 0.7rem;
+							// position: absolute;
+							bottom: 0;
+						}
+					}
+				}
+				.fetalPresentationParam{
+					font-size: 0.55rem;
+					color: red;
+					max-width: 30px;
+					overflow: hidden;
+					text-overflow: ellipsis;
+					white-space: nowrap;
+				}
+			}
+
+			.position{
+				align-items: center;
+				justify-content: center;
+				display: grid;
+				div{
+					width: 100%;
+					text-align: center;
+					label{
+						// position: absolute;
+						// margin-top: -2%;
+						font-size: 0.6rem;
+						// right: 0;
+						// left: 0;
+						// top: 0;
+					}
+					span{
+						text-align: center;
+						font-size: 0.77rem;
+					}
+					.data{
+						margin-bottom: -4px;
+					}
+				}
+			}
+			.GPCA{
+				ion-col{
+					padding: 0;
+					margin: 0;
+					.data-pregnancy{
+						align-items: center;
+						width: 100%;
+						justify-content: center;
+						display: flex;
+						font-size: 0.8rem;
+					}
+				}
+			}
+			.roomPatient{
+				
+				align-items: center;
+				// justify-content: center;
+				display: grid;
+				padding-left: 1%;
+				margin-bottom: -5px;
+				div{
+					text-overflow: ellipsis;
+					white-space: nowrap;
+					overflow: hidden;
+					/* flex-wrap: nowrap; */
+					/* word-break: break-all; */
+					/* white-space: nowrap; */
+					.nameRoom{
+						// font-size: 1.2rem;
+						font-weight: bold;
+					}
+					.displayNamePatient{
+						// font-size: 1.3rem;
+					}
+				}
+			}
+			.rowCondition{
+				display: contents;
+				.conditionCard{
+					font-size: 0.555rem;
+					max-width: 70%;
+					margin-top: -4px;
+					padding-left: 1%;
+					display: flex;
+					flex-wrap: wrap;
+					// display: -webkit-inline-box;
+					// flex-wrap: wrap;
+					// text-overflow: ellipsis;
+					// white-space: nowrap;
+					// overflow: hidden;
+					.statusRoom{
+						margin-right: 2px;
+					}
+				}
+			}
+			.cervical{
+				text-align: center;
+				font-size: 0.88rem;
+				padding: 0;
+				.data{
+					display: flex;
+					align-items: center;
+					justify-content: center;
+					font-weight: bold;
+					.cervicalExam{   
+						display: flex;
+					}
+				}
+				.date{
+					font-size: 0.6rem;
+					width: 100%;
+					position: absolute;
+					left: 0;
+				}
+			}
+		}
+		.areaExpanded{
+			padding-bottom: 1%;
+			border-bottom: groove;
+			background-color: rgb(244,244,244);
+			.card{
+				box-shadow: inset 0 0 8px #989aa280;
+				width: 100%;
+				border-radius: 13px;
+				padding: 4px 0 4px 4px;
+				background-color: rgb(249,250,252);
+				.nursy{
+					margin: 2px;
+					.space{
+						display: flex;
+						align-items: center;		
+					}
+				}
+				.physician{
+					display: flex;
+					margin: 2px;
+				}
+				.preg{
+					margin: 2px;
+				}
+				.notes{
+					margin: 2px;
+					div{
+						display: flex;
+						.icon{
+							color: rgb(245, 163, 105);
+						}
+					}
+				}
+			}
+			ion-note{
+				border-top-left-radius: 3px;
+				border-top-right-radius: 3px;
+				margin-right: 3px;
+			}
+			.border{
+				border: solid 1px grey;
+				border-left: solid 3px grey;
+			}
+			.title{
+				font-size: 0.7rem;
+				display: flex;
+				background-color: #d3d3d347;
+				width: 100%;
+			}
+			.data-pregnancy{
+				padding-top: 5px;
+				width: 100%;    
+				padding-bottom: 5px;
+				display: flex;
+			}
+			.conditions{
+				.condition{
+					margin: 2px;
+					word-spacing: -3px;
+				}
+			}
+			
+		}
+	}
+}

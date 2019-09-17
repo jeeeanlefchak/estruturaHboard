@@ -1,0 +1,32 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Institution</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content padding>
+  <ion-list>
+    <!-- <ion-list-header>Single Selection</ion-list-header> -->
+    <form [formGroup]="signinForm" (ngSubmit)="onSubmit(); $event.preventDefault()">
+      <ion-item>
+        <ion-label>Select Institution</ion-label>
+        <ion-select (ionChange)="selectedInstitution($event)" interface="alert" placeholder="Institution"
+          formControlName="institution">
+          <ion-select-option [value]="institution" *ngFor="let institution of institutions">{{institution?.name}}
+          </ion-select-option>
+        </ion-select>
+      </ion-item>
+
+      <ion-item>
+        <ion-label>Select Sector</ion-label>
+        <ion-select interface="alert" formControlName="sector">
+          <ion-select-option [value]="sector" *ngFor="let sector of sectores">
+            {{sector?.name}}</ion-select-option>
+        </ion-select>
+      </ion-item>
+      <ion-button (click)="onSubmit()" [disabled]="signinForm.invalid" expand="full" color="primary">Ok</ion-button>
+
+    </form>
+
+  </ion-list>
+</ion-content>

@@ -1,0 +1,127 @@
+.inner-scroll scroll-y{
+    overflow: hidden !important;
+}
+.panel{
+    .detailPatient{
+        text-align: center;
+        font-size: 1.0rem;
+    }
+    .detail{
+        width: 100%;
+        color: white;
+        background: rgb(47, 94, 122);
+        border-top-left-radius: 20px;
+        border-top-right-radius: 20px;
+        padding-top: 1%;
+        padding-left: 4%;
+        margin-top: 5px;
+        .patientName{
+            font-size: 2.0rem;
+        }
+        .name{
+            font-size: 1.6rem;
+        }
+    }
+    background: white;
+}
+.crudAction{
+    position: absolute;
+    left: 0;
+    right: 0;
+    text-align: center;
+    font-size: 0.8rem;
+    bottom : 0;
+}
+.tootleMode{
+    position: absolute;
+    right: 0;
+    top: 7px;
+}
+
+#modal-cervical-exam{
+    --knob-background: rgb(163, 210, 191) !important;
+    --knob-box-shadow: rgb(163, 210, 191) !important;
+    .spinner{
+        position: absolute;
+        left: 48%;
+        top: 48%;
+    }
+    ion-list{
+        padding: 0 9px;
+    }
+    .parametrs{
+        width: 100%;
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        .item{
+            margin: -10px;
+        }
+        .modeView{
+            ion-label{
+                font-weight: 600;
+                font-size: 1.5rem;
+                color: rgb(124,114,108);
+            }
+            ion-range{
+                padding: 0 0 0 8px !important;
+            }
+            .options{
+                margin-top: -10px;
+                padding-bottom: 10px;
+            }
+            .date806{
+                display: flex;
+                flex-wrap: wrap;
+                .result{
+                    border: 1px solid rgb(124,144,108);
+                    border-radius: 5px;
+                    padding: 5px;
+                    margin: 5px;
+                    span{
+                        color : rgb(124,114,108);
+                    }
+                }
+                .itemSelected{
+                    background-color: rgb(163,210,191);
+                    color: white !important;
+                }
+            }
+            
+        }
+    }
+    .rodape{
+        // ion-item-divider{
+            display: inline;
+            label{
+                font-weight: 600;
+                font-size: 0.850rem;
+                color: #7c726c;
+            }
+            .created{
+                padding-left: 5px;
+            }
+        // }
+        }
+}
+.btns{
+    text-align: end;
+    button{
+        border-radius: 8px;
+        color: white;
+        min-width: 10%;
+        min-height: 29px;
+        margin-right: 1%;
+        margin-bottom: 1px;
+    }
+    .submit{
+        background: rgb(67, 87, 104);
+    }
+    .close{
+        background: rgb(124, 114, 108);
+    }
+}
+
+
