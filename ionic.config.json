@@ -1,0 +1,7 @@
+{
+  "name": "hBoardApp_",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}

@@ -1,0 +1,7 @@
+{
+  "appId": "io.ionic.starter",
+  "appName": "hBoardApp_",
+  "bundledWebRuntime": false,
+  "npmClient": "npm",
+  "webDir": "www"
+}
