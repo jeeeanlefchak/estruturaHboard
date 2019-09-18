@@ -24,3 +24,27 @@
 @import "~@ionic/angular/css/text-alignment.css";
 @import "~@ionic/angular/css/text-transformation.css";
 @import "~@ionic/angular/css/flex-utils.css";
+
+
+ion-item{
+  --ion-background-color:transparent;
+}
+ion-toolbar{
+  --background : transparent;
+}
+
+.toast{
+  text-align: center;
+  .toast-message{ // n ta funcionando 
+      padding-right: 0 !important;
+  }
+  .toast-button{// n ta funcionando 
+      font-size: 13px !important;
+      margin: 0 !important;
+  }
+}
+
+
+[aria-checked=true].sc-ion-alert-ios .alert-radio-inner.sc-ion-alert-ios{
+  border-color : green !important;
+}

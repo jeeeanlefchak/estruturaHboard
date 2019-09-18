@@ -36,22 +36,22 @@ export class AppComponent implements OnInit {
       this.statusBar.styleDefault();
       this.statusBar.backgroundColorByHexString('#E9E9Ef');
       this.splashScreen.hide();
-      // this.auth.authenticationState.subscribe(state => {
-      //   if (state) {
-      //     this.router.navigate(['tabs/patients']);
-      //     this.checkInstitutionAndSector();
-      //   } else {
-      //     this.auth.checkToken().then(res => {
-      //       if (res) {
-      //         this.router.navigate(['tabs/patients']);
-      //       } else {
-      //         this.router.navigate(['/login']);
-      //       }
-      //     },error=>{
-      //       this.router.navigate(['/login']);
-      //     });
-      //   }
-      // });
+      this.auth.authenticationState.subscribe(state => {
+        if (state) {
+          this.router.navigate(['tabs/patients']);
+          this.checkInstitutionAndSector();
+        } else {
+          this.auth.checkToken().then(res => {
+            if (res) {
+              this.router.navigate(['tabs/patients']);
+            } else {
+              this.router.navigate(['/login']);
+            }
+          },error=>{
+            this.router.navigate(['/login']);
+          });
+        }
+      });
     });
   }
 

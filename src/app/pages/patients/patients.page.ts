@@ -25,6 +25,7 @@ import { ActionHandoff } from 'src/app/models/publicEnums';
 import { PlayerPositionToPlayerPositionService } from 'src/app/services/player-position-to-player-position.service';
 import { PlayerPositionToPlayerPosition } from 'src/app/models/playerPositionToPlayerPosition';
 import { Person } from 'src/app/models/person';
+import { AssessmentParams } from 'src/app/models/assessmentParams';
 @Component({
   selector: 'patients',
   templateUrl: './patients.page.html',
@@ -155,17 +156,19 @@ export class PatientsPage extends InstitutionAndSector implements OnInit, OnDest
           });
         }
         if (res[i].physician) {
-          res[i].physician.forEach(physician => {
-            this.personService.getById(physician.personId).then((person) => {
-              physician.person = person;
-              if (physician.positionOccupations[0].position.cssClassContent != undefined) {
-                if (typeof (physician.positionOccupations[0].position.cssClassContent) == 'string') {
-                  physician.positionOccupations[0].position.cssClassContent = JSON.parse(physician.positionOccupations[0].position.cssClassContent);
+          if (res[i].physician.physicians) {
+            res[i].physician.physicians.forEach(physician => {
+              this.personService.getById(physician.personId).then((person) => {
+                physician.person = person;
+                if (physician.positionOccupations[0].position.cssClassContent != undefined) {
+                  if (typeof (physician.positionOccupations[0].position.cssClassContent) == 'string') {
+                    physician.positionOccupations[0].position.cssClassContent = JSON.parse(physician.positionOccupations[0].position.cssClassContent);
+                  }
+                  physician.positionOccupations[0].position['avatarColor'] = physician.positionOccupations[0].position.cssClassContent['background-color'];
                 }
-                physician.positionOccupations[0].position['avatarColor'] = physician.positionOccupations[0].position.cssClassContent['background-color'];
-              }
+              });
             });
-          });
+          }
         }
         if (res.length - 1 == i) {
           let board = { rowData: res };
@@ -257,50 +260,18 @@ export class PatientsPage extends InstitutionAndSector implements OnInit, OnDest
   }
 
   async openAssessmentEditor(data, assessmentInstanceUid: string, rowUpdate: string, action?: string) {
-    let obj = {
-      assessmentInstanceUid: assessmentInstanceUid,
-      rowUpdate: rowUpdate,
-      assessmentInstances: [{}],
-      currentRoom: data.room,
-      assessmentParams: {
-        admissionId: data.admission.id,
-        objectId: data.patient.id,
-        objectType: 2,
-        activePatient: data.patient
-      },
-      admission: data.admission,
-      action: action ? action : 'NEW',
-      patient: data.patient
-    }
-
-    this.storgeConfigurations.set('assessment', obj).then(success => {
+    let assessmentParams: AssessmentParams = new AssessmentParams();
+    assessmentParams.admissionId = data.admission.id;
+    assessmentParams.objectId = data.patient.id;
+    assessmentParams.objectType = 2;
+    assessmentParams.patient = data.patient;
+    assessmentParams.room = data.room;
+    assessmentParams.assessmentInstanceUid = assessmentInstanceUid;
+    assessmentParams.action = action ? action : 'NEW';
+    this.storgeConfigurations.set('assessment', assessmentParams).then(success => {
       this.router.navigate(['assessment']);
     })
   }
-
-  // async openAssessmentEditor(data, action) {
-  //   console.log(action);
-  //   let obj = {
-  //     assessmentInstanceUid : 'CERVICAL_EXAM',
-  //     rowUpdate: ['cervicalExam'],
-  //     assessmentInstances: [{}],
-  //     currentRoom: data.room,
-  //     assessmentParams: {
-  //       admissionId: data.admission.id,
-  //       objectId: data.patient.id,
-  //       objectType: 2,
-  //       activePatient: data.patient
-  //     },
-  //     admission: data.admission,
-  //     action: action,
-  //     patient: data.patient
-  //   }
-
-  //   this.storgeConfigurations.set('assessment', obj).then(success => {
-  //     this.router.navigate(['assessment']);
-
-  //   })
-  // }
 
   private async getUserLogged() {
     await this.authenticationService.loggedUser.subscribe(async (user) => {
@@ -450,10 +421,10 @@ export class PatientsPage extends InstitutionAndSector implements OnInit, OnDest
       playerPositionOccupation.position = position;
       delete playerPositionOccupation.position.groups;
       delete playerPositionOccupation.position.occupations;
-      this.playerPositionOccupationService.postWithStation(playerPositionOccupation, data.room.id).then(async (respond) => {
+      this.playerPositionOccupationService.postWithStation(playerPositionOccupation, data.room.id).then(async (respond: any) => {
         if (respond) {
-          if (respond['id'] != 0) {
-            this.addPositionOccupation(data, respond, notify);
+          if (respond.playerPositionOccupation.id != 0) {
+            this.addPositionOccupation(data, respond.playerPositionOccupation, notify);
           } else {
             this.presentToast(`This player is already in this admission.
             Data not saved!`, 3000, 'danger')
@@ -492,17 +463,17 @@ export class PatientsPage extends InstitutionAndSector implements OnInit, OnDest
     }
   }
 
-  private addPositionOccupation(data, respond, notify) {
+  private addPositionOccupation(data, occupation, notify) {
     let exists = false;
     if (data.nursing) {
       data.nursing.forEach(nursy => {
         if (this.userLogged.ownerId == nursy.id) {
           if (nursy.positionOccupations) {
-            nursy.positionOccupations.push(respond);
+            nursy.positionOccupations.push(occupation);
             exists = true;
           }
           else {
-            let nursy = { id: this.userLogged.ownerId, positionOccupations: [respond], position: respond.position };
+            let nursy = { id: this.userLogged.ownerId, positionOccupations: [occupation], position: occupation.position };
             data.nursing.push(nursy);
             exists = true;
           }
@@ -513,13 +484,13 @@ export class PatientsPage extends InstitutionAndSector implements OnInit, OnDest
           this.personService.getById(player.personId).then((person: Person) => {
             player.person = person;
             if (!exists && data.nursing.length > 0) {
-              player.positionOccupations = [respond];
-              player.position = respond.position;
+              player.positionOccupations = [occupation];
+              player.position = occupation.position;
               data.nursing.unshift(player);
             } else {
               data.nursing[0] = player;
-              data.nursing[0].positionOccupations = [respond];
-              data.nursing[0].position = respond.position;
+              data.nursing[0].positionOccupations = [occupation];
+              data.nursing[0].position = occupation.position;
             }
             this.updateListRow(data);
           })
@@ -616,7 +587,9 @@ export class PatientsPage extends InstitutionAndSector implements OnInit, OnDest
         res.forEach(async (navBarPlayer) => {
           list.forEach(x => {
             if (x.physician) {
-              x.physician = x.physician.filter(x => x.id != navBarPlayer.playerId);
+              if (x.physician.physicians) {
+                x.physician.physicians = x.physician.physicians.filter(x => x.id != navBarPlayer.playerId);
+              }
             }
           })
         });
@@ -1231,9 +1204,11 @@ export class PatientsPage extends InstitutionAndSector implements OnInit, OnDest
     // debugger
     let existis: boolean = false;
     if (data.physician) {
-      for (let i = 0; i < data.physician.length; i++) {
-        if (data.physician[i].id == this.userLogged.ownerId) {
-          existis = true;
+      if (data.physician.physicians) {
+        for (let i = 0; i < data.physician.physicians.length; i++) {
+          if (data.physician.physicians[i].id == this.userLogged.ownerId) {
+            existis = true;
+          }
         }
       }
     }
@@ -1243,5 +1218,5 @@ export class PatientsPage extends InstitutionAndSector implements OnInit, OnDest
   openConditions() {
     this.router.navigate(['intervention/3']);
   }
-  
+
 }

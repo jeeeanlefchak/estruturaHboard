@@ -34,7 +34,7 @@ export class AuthenticationService {
     private router: Router,
     @Inject('boards') private storageBoard: Storage,
     private playerService: PlayerService,
-    private personService: PersonService
+    private personService: PersonService,
   ) {
     this.plt.ready().then(() => {
       this.checkToken();
@@ -49,11 +49,11 @@ export class AuthenticationService {
           if (token) {
             let user = new AuthenticateUser();
             let json = JSON.parse(token.User);
-            user.email = json.Email;
-            user.name = json.Name;
-            user.ownerId = json.OwnerId;
-            user.ownerType = json.OwnerType;
-            user.userAccountId = json.UserAccountId;
+            user.email = json.email;
+            user.name = json.name;
+            user.ownerId = json.ownerId;
+            user.ownerType = json.ownerType;
+            user.userAccountId = json.userAccountId;
             this.loggedUser.next(user);
             this.authenticationState.next(true);
             resolve(true);
@@ -75,18 +75,17 @@ export class AuthenticationService {
   async login(user: User) {
     this.createLoading('Logging in');
     await this.securityService.post(user).then((response: any) => {
-      let userInfo = response;
       if (response != undefined) {
-        this.storgeConfigurations.set(TOKEN_KEY, userInfo.accessToken).then(async () => {
-          let token = this.tokenService.getDecodeToken(userInfo.accessToken);
+        this.storgeConfigurations.set(TOKEN_KEY, response.accessToken).then(async () => {
+          let token = this.tokenService.getDecodeToken(response.accessToken);
           if (token) {
             let user = new AuthenticateUser();
             let json = JSON.parse(token.User);
-            user.email = json.Email;
-            user.name = json.Name;
-            user.ownerId = json.OwnerId;
-            user.ownerType = json.OwnerType;
-            user.userAccountId = json.UserAccountId;
+            user.email = json.email;
+            user.name = json.name;
+            user.ownerId = json.ownerId;
+            user.ownerType = json.ownerType;
+            user.userAccountId = json.userAccountId;
             this.loggedUser.next(user);
             this.authenticationState.next(true);
             await this.dismissLoading();

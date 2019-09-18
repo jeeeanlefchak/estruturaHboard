@@ -5,6 +5,7 @@ export class AssessmentParameterInstanceResult extends Base{
     parameterInstanceId: number;
     resultOption: AssessmentTemplateParameterOption;
     resultOptionId: number;
+    resultOptionID: number;
     resultText: any;
     resultValue: string;
     availableOn: Date;

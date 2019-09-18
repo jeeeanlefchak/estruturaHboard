@@ -1,9 +1,7 @@
-import { Component, NgModule, Inject, Input } from '@angular/core';
-import { IonicModule, ToastController, NavController } from '@ionic/angular';
-import { CommonModule, DatePipe } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { EventService } from 'src/app/services/shared/EventsService';
-import { CRUDAction } from 'src/app/models/publicEnums';
+import { Component, Inject } from '@angular/core';
+import { ToastController, NavController } from '@ionic/angular';
+import { DatePipe } from '@angular/common';
+import { CRUDAction, ExecuteActionWhen } from 'src/app/models/publicEnums';
 import { AssessmentInstance } from 'src/app/models/assessmentInstance';
 import { AssessmentParams } from 'src/app/models/assessmentParams';
 import { AssessmentInstanceService } from 'src/app/services/assessment-instance.service';
@@ -21,15 +19,15 @@ export class AssessmentInstanceComponent {
   slideOpts = {
     effect: 'flip'
   };
-
-  public loading: boolean = true;
+  saving: boolean = false;
+  loading: boolean = true;
   assessmentInstance: AssessmentInstance = new AssessmentInstance();
   assessmentInstances: AssessmentInstance[] = [];
-  assessmentParams: AssessmentParams;
-  public modeView: boolean = false;
-
-  public data: any;
+  param: AssessmentParams;
+  modeView: boolean = false;
   viewTravando: boolean = false;
+
+  private sendItemsExtrada = { assessmentInstanceUid: '', admissionId: 0, itemsCrudAction: [{ assessmentId: 0, crudAction: 0 }] };
 
   constructor(public datepipe: DatePipe, @Inject('configurations') private storgeConfigurations: Storage,
     private assessmentInstanceService: AssessmentInstanceService, public toastController: ToastController,
@@ -40,8 +38,9 @@ export class AssessmentInstanceComponent {
     this.getModeView();
     this.storgeConfigurations.get('assessment').then(res => {
       res.action ? res.action : 'NEW';
-      this.data = res;
-      if (this.data.action == 'NEW') {
+      this.param = res;
+      console.log("PARAM", this.param);
+      if (this.param.action == 'NEW') {
         this.getNew();
       } else {
         this.getEdit();
@@ -51,9 +50,11 @@ export class AssessmentInstanceComponent {
   }
   public getNew() {
     this.loading = true;
-    this.assessmentInstanceService.getNewInstance(this.data.assessmentInstanceUid).then((assessment: AssessmentInstance) => {
+    this.assessmentInstanceService.getNewInstance(this.param.assessmentInstanceUid, this.param.objectType, this.param.objectId, this.param.admissionId).then((assessment: AssessmentInstance) => {
       assessment.orderedOn = new Date(assessment.orderedOn).toISOString();
-      this.assessmentInstance = assessment;
+      assessment.changed = true;
+      this.assessmentInstances.push(assessment);
+      this.assessmentInstance = this.assessmentInstances[0];
       this.loading = false;
       setTimeout(() => {
         this.viewTravando = true;
@@ -66,7 +67,7 @@ export class AssessmentInstanceComponent {
 
   public getEdit() {
     this.loading = true;
-    this.assessmentInstanceService.getByIdLazyLoad(this.data.idCervicalExam).then((res: any) => {
+    this.assessmentInstanceService.getByIdLazyLoad(this.param.id).then((res: any) => {
       for (let i = 0; i < res.parameters.length; i++) {
         if (res.parameters[i].parameterTemplate.options && res.parameters[i].results[0]) {
           for (let w = 0; w < res.parameters[i].parameterTemplate.options.length; w++) {
@@ -80,78 +81,121 @@ export class AssessmentInstanceComponent {
         }
       }
       this.loading = false;
-      this.assessmentInstance = res;
+      this.assessmentInstances.push(res);
     }, error => {
       this.loading = false;
-      this.presentToast('error to edit Admissão');
+      this.presentToast('error to load');
     })
-    // this.loadHistory();
   }
 
-  // private loadHistory() {
-  //   debugger
-  //   this.assessmentInstanceService.getByUids(this.assessmentInstance[0].uid, this.assessmentInstance.objectId, this.data.room.id).then((instances: AssessmentInstance[]) => {
-  //     instances.forEach(instance => {
-  //       this.assessmentInstances.push(instance);
-  //     });
-  //   },error=>{
-  //     // this.action.toast
-  //   })
-  // }
 
+  async onSubmit() {
+    this.saving = true;
+    let saveMessages: any[] = []
+    const itemsToDelete = this.assessmentInstances.filter(x => x.deletedOn && x.id != 0);
+    const itemsToSave = await this.prepareItemsToSave(JSON.parse(JSON.stringify(this.assessmentInstances.filter(x => !x.deletedOn && (!x.id || x.id == 0 || x.changed)))));
 
-  // closeModal(newInstance) {
-  //   this.modalControler.dismiss({ cervicalExam: newInstance, room: this.room });
-  // }
-
-  public onSubmit() {
-    let newInstance = JSON.parse(JSON.stringify(this.assessmentInstance));
-    newInstance.objectType = 2;
-    newInstance.objectId = this.data.patient.id;
-    newInstance.touched = true;
-    newInstance.changed = true;
-    delete newInstance.assessmentTemplate;
-    for (let i = 0; i < newInstance.parameters.length; i++) {
-      if (this.data.action.toUpperCase() == 'EDIT') {
-        newInstance.parameters[i].crudAction = CRUDAction.Update;
-        // newInstance.parameters[i].results[0]['crudAction'] = CRUDAction.Update;
-      } else if (this.data.action.toUpperCase() == 'NEW') {
-        newInstance.parameters[i].crudAction = CRUDAction.Create;
-        // newInstance.parameters[i].results[0]['crudAction'] = CRUDAction.Create;
+    itemsToSave.forEach(newInstance => {
+      let executeWarning: boolean = false;
+      newInstance.parameters.map(param => {
+        if (param.parameterTemplate.required) {
+          if (param.results.length == 0) {
+            saveMessages.push({ name: param.parameterTemplate.displayName, message: 'Is required!' });
+            executeWarning = true;
+          } else {
+            if (!param.results[0].resultText) {
+              saveMessages.push({ name: param.parameterTemplate.displayName, message: 'Is required!' });
+              executeWarning = true;
+            }
+          }
+        }
+      })
+      if (executeWarning) {
+        let assessment = this.assessmentInstances.find(x => new Date(x.orderedOn).toISOString() == new Date(newInstance.orderedOn).toISOString());
+        if (assessment) {
+          assessment['warning'] = true;
+        }
       }
-      if (!newInstance.parameters[i].results[0]) {
-        newInstance.parameters[i].results[0] = {};
-      }
-      if (newInstance.parameters[i].resultOption) {
-        newInstance.parameters[i].results[0].resultOptionId = newInstance.parameters[i].resultOption.id;
-        newInstance.parameters[i].results[0].resultText = newInstance.parameters[i].resultOption.value;
-        delete newInstance.parameters[i].resultOption;
-      }
-    }
+    });
 
-    if (this.data.action.toUpperCase() == "NEW") {
-      newInstance.crudAction = CRUDAction.Create;
-      this.assessmentInstanceService.postNewInstance(newInstance, this.data.admission.id).then((resp: any) => {
-        // this.assessmentInstanceService.postRangeNewInstance([newInstance], this.data.admission.id).then((resp: any) => {
-        this.sendToMessage('new');
-        newInstance.id = resp.id;
-        this.updateRow(this.data.currentRoom.id, this.data.rowUpdate);
-        this.close();
-      }).catch(error => {
-        this.presentToast('Error to save')
-        console.log("Error", error);
-      });
+    if (saveMessages.length == 0) {
+      if (itemsToSave.length > 0) {
+
+        let resp = await this.postRangeInstance(itemsToSave, this.param.admissionId);
+        // PARA ATUALIZAR EM OUTRO TERMINAL
+        let assessAfterList = this.assessmentInstances.filter(x => !x.deletedOn);
+        let assessmentsIdsToAfterUpdate: AssessmentInstance[] = [];
+        resp.forEach(resp => {
+          for (let item of itemsToSave) {
+            if (new Date(item.orderedOn).toISOString() == new Date(resp.orderedOn).toISOString()) {
+              if (!this.sendItemsExtrada.itemsCrudAction) this.sendItemsExtrada.itemsCrudAction = [];
+              this.sendItemsExtrada.itemsCrudAction.push({ assessmentId: resp.id, crudAction: item.crudAction });
+            }
+          }
+        });
+
+        assessAfterList.forEach(assess => {
+          if (assess.id == 0) {
+            for (let assesSaved of resp) {
+              if (new Date(assesSaved.orderedOn).toISOString() == new Date(assess.orderedOn).toISOString()) {
+                assess.id = assesSaved.id;
+                assess.crudAction = CRUDAction.Create;
+              }
+            }
+          }
+          let found = assessmentsIdsToAfterUpdate.find(x => x.assessmentTemplateId == assess.assessmentTemplateId); // só deve inserir o primeiro de cada assessment!!
+          if (!found) {
+            assessmentsIdsToAfterUpdate.push(assess);
+          }
+        });
+
+        assessmentsIdsToAfterUpdate.forEach(async (assessAfterUpdate) => {
+          let actionWhen: ExecuteActionWhen = ExecuteActionWhen.AfterInsert;
+          if (assessAfterUpdate.crudAction == CRUDAction.Create) {
+
+          } else {
+            actionWhen = ExecuteActionWhen.AfterUpdate;
+
+          }
+
+          await this.postExecutActions(assessAfterUpdate.id, actionWhen, this.param.admissionId);
+        });
+      }
+      if (itemsToDelete.length > 0) {
+        await this.deleteRangeInstances(this.prepareIdsToDelete(itemsToDelete));
+        for (let item of itemsToDelete) {
+          if (!this.sendItemsExtrada.itemsCrudAction) this.sendItemsExtrada.itemsCrudAction = [];
+          this.sendItemsExtrada.itemsCrudAction.push({ assessmentId: item.id, crudAction: CRUDAction.Delete });
+        }
+      }
+
+      this.sendToMessage('update');
+      this.updateRow(this.param.room.id, this.sharedData.getColumnNameByAssessmentUid(this.param.assessmentInstanceUid));
+      this.close();
+
     } else {
-      newInstance.crudAction = CRUDAction.Update;
-      this.assessmentInstanceService.putNewInstance(newInstance, newInstance.id).then(resp => {
-        this.sendToMessage('update');
-        this.updateRow(this.data.currentRoom.id, this.data.rowUpdate);
-        this.close();
-      }).catch(error => {
-        console.log("Error", error);
-        this.presentToast('Error to update')
+      saveMessages.map(m => {
+        this.presentToast(m.name + m.message);
       });
+      this.saving = false;
+      return;
     }
+  }
+
+  private prepareIdsToDelete(assessments): number[] {
+    let ids: number[] = [];
+    assessments.forEach(assessment => {
+      let deleteItem: boolean = true;
+      if (assessment['itemUpdated']) {
+        if (assessment['itemUpdated'] == CRUDAction.Delete) {
+          deleteItem = false;
+        }
+      }
+      if (deleteItem) {
+        ids.push(assessment.id)
+      }
+    });
+    return ids
   }
 
   public updateRow(idRoom: number, cloumn: string) {
@@ -161,7 +205,7 @@ export class AssessmentInstanceComponent {
   }
 
   sendToMessage(action) {
-    const payload = { stationId: [this.data.currentRoom.id], columns: [this.data.rowUpdate] }
+    const payload = { stationId: [this.param.room.id], columns: [this.sharedData.getColumnNameByAssessmentUid(this.param.assessmentInstanceUid)] }
     this.sharedData.sendToMessage(['board'], 'dataRow', payload, action).then();
   }
 
@@ -181,7 +225,49 @@ export class AssessmentInstanceComponent {
     // EventService.get('cervicalexam').emit({ cervicalExam: newInstance, stationId: this.data.stationId });
   }
 
-
+  private prepareItemsToSave(assessmentInstances: any[]): AssessmentInstance[] {
+    console.log('this.param', this.param)
+    let itemsToSave: AssessmentInstance[] = [];
+    assessmentInstances.forEach(newInstance => {
+      let inertIntem: boolean = true;
+      if (newInstance['itemUpdated']) {
+        if (newInstance['itemUpdated'] == CRUDAction.Delete) {
+          inertIntem = false;
+        }
+      }
+      if (inertIntem) {
+        newInstance.objectType = this.param.objectType;
+        newInstance.objectId = this.param.objectId;
+        //newInstance.assessmentLabelId = newInstance.assessmentLabelId;
+        delete newInstance.assessmentTemplate;
+        for (let i = 0; i < newInstance.parameters.length; i++) {
+          if (this.param.action.toUpperCase() == 'EDIT') {
+            newInstance.parameters[i].crudAction = CRUDAction.Update;
+          } else if (this.param.action.toUpperCase() == 'NEW') {
+            newInstance.parameters[i].crudAction = CRUDAction.Create;
+          }
+          if (newInstance.parameters[i].resultOption) {
+            delete newInstance.parameters[i].resultOption;
+          }
+          if (newInstance.parameters[i].results) {
+            newInstance.parameters[i].results.forEach(res => {
+              res.parameterInstanceId = newInstance.parameters[i].id;
+              if (res.id < 0) {
+                res.id = 0;
+              }
+            });
+          }
+        }
+        if (newInstance.id == 0) {
+          newInstance.crudAction = CRUDAction.Create;
+        } else {
+          newInstance.crudAction = CRUDAction.Update;
+        }
+        itemsToSave.push(newInstance);
+      }
+    });
+    return itemsToSave;
+  }
 
   async presentToast(message) {
     const toast = await this.toastController.create({
@@ -195,7 +281,6 @@ export class AssessmentInstanceComponent {
   setModView(value: boolean) {
     value ? value : false;
     this.storgeConfigurations.set('modeViewAssessment', value = !value).then(res => {
-
     })
   }
 
@@ -205,9 +290,40 @@ export class AssessmentInstanceComponent {
     }, error => {
       this.modeView = true;
     })
-
   }
 
+
+  private postExecutActions(id, actionWhen, admissionId) {
+    return new Promise<any>(async (resolve, reject) => {
+      this.assessmentInstanceService.executeActions(id, actionWhen, admissionId).then(res => {
+        resolve();
+      }, error => {
+        resolve();
+      });
+    });
+  }
+
+  private postRangeInstance(itemsToSave, admissionId) {
+    return new Promise<AssessmentInstance[]>(async (resolve, reject) => {
+      this.assessmentInstanceService.postRangeNewInstance(itemsToSave, admissionId).then((resp: AssessmentInstance[]) => {
+        resolve(resp);
+      }, error => {
+        this.presentToast('error to create assessment');
+        reject();
+      });
+    });
+  }
+
+  private deleteRangeInstances(ids: number[]) {
+    return new Promise<AssessmentInstance[]>(async (resolve, reject) => {
+      this.assessmentInstanceService.deleteRange(ids).then(res => {
+        resolve();
+      }, error => {
+        this.presentToast('error to delete assessment');
+        reject();
+      })
+    })
+  }
 }
 
 

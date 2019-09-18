@@ -48,7 +48,7 @@ export class AccountPage implements OnInit {
     { id: 11, text: 'iMobile' }
   ]
 
-  picture: SafeHtml;
+  picture: any;
   saving: boolean = false;
   gettingData: boolean = false;
 
@@ -372,26 +372,26 @@ export class AccountPage implements OnInit {
     this.navCtrl.pop();
   }
 
-  // async openOptionPicture() {
-  //   const actionSheet = await this.actionSheetCtrl.create({
-  //     header: 'Albums',
-  //     buttons: [{
-  //       text: 'Câmera',
-  //       role: 'destructive',
-  //       icon: 'camera',
-  //       handler: () => {
-  //         this.captura('camera');
-  //       }
-  //     }, {
-  //       text: 'Galery',
-  //       icon: 'photos',
-  //       handler: () => {
-  //         this.captura('galery');
-  //       }
-  //     }]
-  //   });
-  //   await actionSheet.present();
-  // }
+  async openOptionPicture() {
+    //   const actionSheet = await this.actionSheetCtrl.create({
+    //     header: 'Albums',
+    //     buttons: [{
+    //       text: 'Câmera',
+    //       role: 'destructive',
+    //       icon: 'camera',
+    //       handler: () => {
+    //         this.captura('camera');
+    //       }
+    //     }, {
+    //       text: 'Galery',
+    //       icon: 'photos',
+    //       handler: () => {
+    //         this.captura('galery');
+    //       }
+    //     }]
+    //   });
+    //   await actionSheet.present();
+  }
 
   // private captura(open) {
   //   if (open == 'galery') {

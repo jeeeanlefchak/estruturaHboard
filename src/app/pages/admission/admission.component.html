@@ -12,7 +12,7 @@
     <span class="name"> Room {{data?.room?.shortName}} </span>
   </ion-row>
   <ion-row>
-    <span class="patientName"> {{data?.patient?.displayName}} </span>
+    <span class="patientName"> {{data?.patient?.person?.displayName}} </span>
   </ion-row>
 </div>
 
@@ -64,7 +64,7 @@
             <ion-note class="title">Physician </ion-note>
           </ion-row>
           <ion-row>
-            <div class="person" *ngFor="let physician of data?.physician; let i = index">
+            <div class="person" *ngFor="let physician of data?.physician?.physicians; let i = index">
               <span
                 style="cursor: pointer; font-size: 1rem; line-height: 1rem; padding: 1px 2px 1px 2px; border-radius: 0.3rem!important;  margin-right: 1px;"
                 [ngStyle]="{'background-image': physician?.positionOccupations[0].position?.cssClassContent != undefined ? 'linear-gradient(#fff, ' + physician?.positionOccupations[0].position?.avatarColor + ')' : 'linear-gradient(#fff,#fff)'}">{{physician?.person?.displayName}}</span>
@@ -153,7 +153,7 @@
                   data?.pregnancy?.numberOfFetusParam?.resultText == '2' ? 'Twins' : 
                   data?.pregnancy?.numberOfFetusParam?.resultText == '3' ? 'Triplets' :
                   data?.pregnancy?.numberOfFetusParam?.resultText == '4' ? 'Quads' :
-                  +Quads
+                  '+Quads'
                  }}</b>
               </div>
             </ion-row>
@@ -275,7 +275,8 @@
         </div>
       </ion-col>
       <ion-col>
-        <div class="pain card" (click)="openAssessmentEditor(data, 'LABOR_AND_DELIVERY_ANESTHESIOLOGY_MANAGEMENT', 'pain')">
+        <div class="pain card"
+          (click)="openAssessmentEditor(data, 'LABOR_AND_DELIVERY_ANESTHESIOLOGY_MANAGEMENT', 'pain')">
           <ion-row>
             <ion-note class="title">Pain </ion-note>
           </ion-row>

@@ -4,6 +4,7 @@ import { DataConnService } from './shared/data-conn.service';
 import { AssessmentInstance } from '../models/assessmentInstance';
 import { AbstractService } from './abstract.service';
 import { ObjectTypes } from '../models/assessmentParams';
+import { ExecuteActionWhen } from '../models/publicEnums';
 
 const httpOptions = {
   headers: new HttpHeaders({ 'Content-Type': 'application/json' })
@@ -23,8 +24,11 @@ export class AssessmentInstanceService extends AbstractService<AssessmentInstanc
   }
 
 
-  public getNewInstance(uid: string) {
-    const url = `${this.urlBase}/new/uid/${uid}`;
+  public getNewInstance(uid: string, objectType?: number, objectId?: number, admissionId?: number) {
+    let url = `${this.urlBase}/new/uid/${uid}`;
+    if (admissionId) url += '?admissionId=' + admissionId;
+    if (objectType) url += '&objectType=' + objectType;
+    if (objectId) url += '&objectId=' + objectId;
     return this.http.get(url).toPromise();
   }
 
@@ -100,4 +104,29 @@ export class AssessmentInstanceService extends AbstractService<AssessmentInstanc
   //   }
   //   return this.http.put(uRL, _formObject, httpOptions).toPromise();
   // }
+
+  public executeActions(id: number, executeActionWhen: ExecuteActionWhen, _admissionId: number = undefined) {
+    let url: string = this.urlBase + "/" + id + '/ExecuteActions/' + executeActionWhen;
+    var promise = new Promise<AssessmentInstance[]>((resolve, reject) => {
+      this.http.post(url, null).toPromise().then((res: any[]) => {
+        resolve(res);
+      }).catch(error => {
+        reject(error);
+      })
+    })
+    return promise;
+  }
+
+  public deleteRange(ids: number[]) {
+    let url: string = this.urlBase + "/DeleteRange";
+    var promise = new Promise<AssessmentInstance[]>((resolve, reject) => {
+      this.http.post(url, ids).toPromise().then((res: any[]) => {
+        resolve(res);
+      }).catch(error => {
+        reject(error);
+      })
+    })
+    return promise;
+  }
+
 }

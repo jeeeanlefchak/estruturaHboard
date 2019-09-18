@@ -18,22 +18,22 @@
   <ion-row *ngIf="!modeView">
     <div class="detail">
       <ion-row>
-        <span class="name"> Room {{data?.currentRoom?.shortName}} </span>
+        <span class="name"> Room {{param?.room?.name}} </span>
       </ion-row>
       <ion-row>
-        <span class="patientName">{{data?.patient?.displayName}} </span>
+        <span class="patientName">{{param?.patient?.person?.displayName}} </span>
       </ion-row>
     </div>
   </ion-row>
   <ion-card-subtitle class="detailPatient" *ngIf="modeView">
     <div>
-      <span *ngIf="data?.currentRoom?.shortName"> Room {{data?.currentRoom?.shortName}}
+      <span *ngIf="param?.room?.shortName"> Room {{param?.room?.shortName}}
       </span>
     </div>
     <div>
-      <span *ngIf="data?.patient.id">
-        {{formatId(data?.patient?.id)}}
-        {{data?.patient?.displayName}} </span>
+      <span *ngIf="param?.patient.id">
+        {{formatId(param?.patient?.id)}}
+        {{param?.patient?.person?.displayName}} </span>
     </div>
   </ion-card-subtitle>
   <ion-item *ngIf="viewTravando">

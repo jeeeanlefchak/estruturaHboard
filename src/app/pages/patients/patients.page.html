@@ -244,11 +244,11 @@
                 </ion-row>
                 <ion-row>
                   <div class="physician">
-                    <div *ngFor="let physician of data?.physician; let i = index">
+                    <div *ngFor="let physician of data?.physician?.physicians; let i = index">
                       <span
                         style=" cursor: pointer; font-size: 1rem; line-height: 1rem; padding: 1px 2px 1px 2px; border-radius: 0.3rem!important;  margin-right: 1px;"
                         [ngStyle]="{'background-image': physician?.positionOccupations[0].position?.cssClassContent != undefined ? 'linear-gradient(#fff, ' + physician?.positionOccupations[0].position?.avatarColor + ')' : 'linear-gradient(#fff,#fff)'}">{{physician?.person?.displayName}}</span>
-                      <span *ngIf="data?.physician?.length -1 > i " style="margin:0px 5px 0px -3px;">; </span>
+                      <span *ngIf="data?.physician?.physicians.length -1 > i " style="margin:0px 5px 0px -3px;">; </span>
                     </div>
                   </div>
                 </ion-row>

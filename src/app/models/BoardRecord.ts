@@ -7,6 +7,7 @@ import { AssessmentInstance } from "./assessmentInstance";
 import { Condition } from "./condition";
 import { InterventionInstance } from "./interventionInstance";
 import { Note } from "./note";
+import { Team } from './team';
 
 export class BoardRecord{
     id: number;
@@ -16,14 +17,18 @@ export class BoardRecord{
     patient: Patient;
     admission: Admission;
     nursing: Player[];
-    physician: Player[];
-    pregnancy: AssessmentInstance[];
+    physician : Physician;
+    pregnancy: AssessmentInstance;
     conditions: Condition[];
-    cervicalExam: AssessmentInstance[];
-    membranes: AssessmentInstance[];
+    cervicalExam: AssessmentInstance;
+    membranes: AssessmentInstance;
     interventions: InterventionInstance[];
-    delivery: AssessmentInstance[];
-    pain: AssessmentInstance[];
+    delivery: AssessmentInstance;
+    pain: AssessmentInstance;
     notes: Note[];
     careTransferItem: CareTransferItem;
+}
+export class Physician {
+  physicians: Player[] = [];
+  teams: Team[] = [];
 }

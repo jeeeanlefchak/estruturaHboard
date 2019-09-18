@@ -57,20 +57,22 @@ export class BoardService extends AbstractService<Board> {
                           res.forEach(row => {
                             board.rowData[index].nursing = row.nursing;//.filter(x => x.id == this.userLogged.ownerId);
                           });
-                          const nursyBoard = board.rowData[index].nursing;
-                          const nursingPlayerLogged = nursyBoard.filter(x => x.id == this.userLogged.ownerId);
-                          const nursings = nursyBoard.filter(x => x.id != this.userLogged.ownerId);
-                          board.rowData[index].nursing = nursingPlayerLogged;
-                          if (nursings) {
-                            nursings.forEach(item => {
-                              board.rowData[index].nursing.push(item);
+                          if (board.rowData[index].nursing) {
+                            const nursyBoard = board.rowData[index].nursing;
+                            const nursingPlayerLogged = nursyBoard.filter(x => x.id == this.userLogged.ownerId);
+                            const nursings = nursyBoard.filter(x => x.id != this.userLogged.ownerId);
+                            board.rowData[index].nursing = nursingPlayerLogged;
+                            if (nursings) {
+                              nursings.forEach(item => {
+                                board.rowData[index].nursing.push(item);
+                              });
+                            }
+                            board.rowData[index].nursing.forEach(nursy => {
+                              this.personService.getById(nursy.personId).then((person) => {
+                                nursy.person = person;
+                              });
                             });
                           }
-                          board.rowData[index].nursing.forEach(nursy => {
-                            this.personService.getById(nursy.personId).then((person) => {
-                              nursy.person = person;
-                            });
-                          });
                         } else if (column == 'physician') {
                           await this.updatePhysician(board.rowData[index].physician)
                         }
@@ -171,26 +173,28 @@ export class BoardService extends AbstractService<Board> {
   }
 
   private async  updatePhysician(physician) {
-    await this.storageConfigurations.get('navBarPlayers').then((res) => {
-      physician.forEach(async (physician) => {
-        if (res) {
-          res = res.filter(x => x.playerId == physician.id)
-        } else {
-          res = [];
-        }
-        if (res.length <= 0) {
-          this.personService.getById(physician.personId).then((person) => {
-            physician.person = person;
-            if (physician.positionOccupations[0].position.cssClassContent != undefined) {
-              if (typeof (physician.positionOccupations[0].position.cssClassContent) == 'string') {
-                physician.positionOccupations[0].position.cssClassContent = JSON.parse(physician.positionOccupations[0].position.cssClassContent);
+    if (physician.physicians) {
+      await this.storageConfigurations.get('navBarPlayers').then((res) => {
+        physician.physicians.forEach(async (physician) => {
+          if (res) {
+            res = res.filter(x => x.playerId == physician.id)
+          } else {
+            res = [];
+          }
+          if (res.length <= 0) {
+            this.personService.getById(physician.personId).then((person) => {
+              physician.person = person;
+              if (physician.positionOccupations[0].position.cssClassContent != undefined) {
+                if (typeof (physician.positionOccupations[0].position.cssClassContent) == 'string') {
+                  physician.positionOccupations[0].position.cssClassContent = JSON.parse(physician.positionOccupations[0].position.cssClassContent);
+                }
+                physician.positionOccupations[0].position['avatarColor'] = physician.positionOccupations[0].position.cssClassContent['background-color'];
               }
-              physician.positionOccupations[0].position['avatarColor'] = physician.positionOccupations[0].position.cssClassContent['background-color'];
-            }
-          });
-        }
+            });
+          }
+        });
       });
-    });
+    }
   }
 
   public getService(): string {
@@ -392,4 +396,14 @@ export class BoardService extends AbstractService<Board> {
     return promise;
   }
 
+  public async getNavBarPlayers(boardUid: string) {
+    return new Promise<any[]>((resolve, reject) => {
+      this.http.get(this.urlBase + "/" + boardUid + "/navbarplayers").toPromise()
+        .then((data) => {
+          resolve(data as any[])
+        })
+    })
+  }
+  
 }
+

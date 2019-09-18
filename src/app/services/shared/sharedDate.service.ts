@@ -221,4 +221,35 @@ export class SharedDataService extends AbstractService<any> implements OnDestroy
 
     })
   }
+
+  getColumnNameByAssessmentUid(uid: string) {
+    let ret: string = '';
+    switch (uid.toUpperCase()) {
+      case 'CERVICAL_EXAM':
+        ret = 'cervicalExam';
+        break;
+      case 'OBSTETRICAL_DELIVERY':
+        ret = 'delivery';
+        break;
+      case 'LABOR_AND_DELIVERY_ANESTHESIOLOGY_MANAGEMENT':
+        ret = 'pain';
+        break;
+      case 'PREGNANCY_MEMBRANES':
+        ret = 'membranes';
+        break;
+      case 'OBSTETRIC_HISTORY':
+        ret = 'pregnancy';
+        break;
+      case 'PREGNANCY':
+        ret = 'pregnancy|delivery';
+        break;
+      case 'POST_DELIVERY_NEONATE':
+        ret = 'delivery'
+        break;
+      default:
+        // ret = uid.toLowerCase().replace(/\b\w/g, l => l.toUpperCase()).replace(' ', '');
+        ret = ''
+    }
+    return ret;
+  }
 }

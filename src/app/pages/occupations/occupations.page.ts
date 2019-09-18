@@ -30,7 +30,7 @@ export class OccupationsPage extends InstitutionAndSector implements OnInit {
   userLogged: AuthenticateUser;
   loadingPositions: boolean = false;
   loadingGroups: boolean = false;
-  loading : any;
+  loading: any;
   uidBoard = 'LABOR_AND_DELIVERY_DEFAULT';
   players: any[] = [];
 
@@ -85,17 +85,20 @@ export class OccupationsPage extends InstitutionAndSector implements OnInit {
   }
 
   async getPositions() {
-    this.loadingPositions = true;
-    // this.playerService.getPlayerIdPositions
-    this.playerService.getPlayerPositions(this.userLogged.ownerId).then(async (playerPositions: PlayerPosition[]) => {
-      playerPositions.sort((a: any, b: any) => {
-        return a.name < b.name ? -1 : 1;
-      });
-      this.myPositions = this.removeDuplicatesPositions(playerPositions.filter(x => x.requestAdmissionType == 1));
-      console.log(this.myPositions)
-      this.loadingPositions = false;
-    }, error => {
-      this.loadingPositions = false
+    return new Promise<any>(async (resolve, reject) => {
+      this.loadingPositions = true;
+      this.playerService.getPlayerPositions(this.userLogged.ownerId).then(async (playerPositions: PlayerPosition[]) => {
+        playerPositions.sort((a: any, b: any) => {
+          return a.name < b.name ? -1 : 1;
+        });
+        this.myPositions = this.removeDuplicatesPositions(playerPositions.filter(x => x.requestAdmissionType == 1));
+        console.log(this.myPositions)
+        this.loadingPositions = false;
+        resolve();
+      }, error => {
+        this.loadingPositions = false
+        reject();
+      })
     })
   }
 
@@ -114,24 +117,32 @@ export class OccupationsPage extends InstitutionAndSector implements OnInit {
   }
 
   async getGroups() {
-    this.loadingGroups = true;
-    this.playerService.getPlayerGroups(this.userLogged.ownerId).then(async (playerGroups: PlayerGroup[]) => {
-      playerGroups.sort((a: any, b: any) => {
-        return a.name < b.name ? -1 : 1;
-      });
-      this.myGroups = playerGroups
-      this.loadingGroups = false;
-    }, error => {
-      this.loadingGroups = false;
+    return new Promise<any>(async (resolve, reject) => {
+      this.loadingGroups = true;
+      this.playerService.getPlayerGroups(this.userLogged.ownerId).then(async (playerGroups: PlayerGroup[]) => {
+        playerGroups.sort((a: any, b: any) => {
+          return a.name < b.name ? -1 : 1;
+        });
+        this.myGroups = playerGroups
+        this.loadingGroups = false;
+        resolve();
+      }, error => {
+        this.loadingGroups = false;
+        reject();
+      })
     })
   }
 
   async doRefresh(evt) {
     if (this.context == "positions") {
-      if (this.userLogged != undefined) this.getPositions()
+      if (this.userLogged != undefined) await this.getPositions();
+
     } else if (this.context == "groups") {
-      if (this.userLogged != undefined) this.getGroups();
+      if (this.userLogged != undefined) await this.getGroups();
     }
+    setTimeout(() => {
+      evt.target.complete();
+    }, 20);
   }
 
   async clickSegment(segment) {

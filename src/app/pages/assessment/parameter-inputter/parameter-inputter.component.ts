@@ -1,15 +1,12 @@
 import { Component, Input, OnInit, ElementRef, HostListener } from '@angular/core';
-import { AssessmentTemplateParameterTemplate } from 'src/app/models/assessmentTemplateParameterTemplate';
 import { AssessmentInstance } from 'src/app/models/assessmentInstance';
 import { AssessmentParameterInstanceResult } from 'src/app/models/assessmentParameterInstanceResult';
 import { CRUDAction } from 'src/app/models/publicEnums';
-import { AssessmentParameterInstance } from 'src/app/models/assessmentParameterInstance';
 import { AssessmentTemplateToParameterTemplatesService } from 'src/app/services/assessment-template-to-parameter-templates.service';
 
 import { UnitService } from 'src/app/services/unit.service';
 import { UnitConversionService } from 'src/app/services/shared/unit-conversion.service';
 import { AssessmentInstanceService } from 'src/app/services/assessment-instance.service';
-import { Patient } from 'src/app/models/patient';
 import { AssessmentParameterTemplateToAssessmentTemplateService } from 'src/app/services/assessment-parameter-templete-to-assessment-templete.service';
 import * as moment from 'moment';
 import { UtilService } from 'src/app/services/util.service';
@@ -84,7 +81,7 @@ export class ParameterInputterComponent implements OnInit {
   }
 
   setText(args) {
-    this.assessmentInstance.parameters[this.index].parameterTemplate['results'][0].resultText = args.target.textContent;
+    this.assessmentInstance.parameters[this.index].results[0].resultText = args.target.textContent;
   }
 
   maxValueRange(options: any[]): number {
@@ -227,40 +224,21 @@ export class ParameterInputterComponent implements OnInit {
     this.weekDays.days = Math.ceil(days);
   }
 
-  markItemSingle(option) {
-    if (this.assessmentInstance.parameters[this.index].results) {
-      if (this.assessmentInstance.parameters[this.index].results[0] == option) {
-        let obj: any = [{ id: 0 }];
-        this.assessmentInstance.parameters[this.index].results = obj;
-        return
-      }
-    }
-
-    let obj: any = {
-      id: 0, resultOption: option, resultOptionId: option.id,
-      resultText: option.name, resultValue: option.name, parameterInstanceId: this.assessmentInstance.parameters[this.index].id
-    };
-    this.assessmentInstance.parameters[this.index].results[0] = obj;
-    this.executeActionsFromSettings();
-  }
-
   markItemMulti(option) {
-    let index = this.assessmentInstance.parameters[this.index].results.findIndex(x => x.resultOptionId == option.id);
-    if (index < 0) index = this.assessmentInstance.parameters[this.index].results.findIndex(x => x['resultOptionID'] == option.id);
+    let index = this.assessmentInstance.parameters[this.index].results.findIndex(x => x.resultOptionId == option.id || x['resultOptionID'] == option.id);
     if (index >= 0) {
-      if (this.assessmentInstance.parameters[this.index].results[index].id == 0) {
+      if (this.assessmentInstance.parameters[this.index].results[index].id <= 0) {
         this.assessmentInstance.parameters[this.index].results.splice(index, 1);
       } else {
         this.assessmentInstance.parameters[this.index].results[index].crudAction = CRUDAction.Delete;
-        // this.assessmentInstance.parameters[this.index].results.splice(index, 1);
       }
-      option.checked = false;
+      option.checked = !option.checked;
     } else {
       let resultOption: AssessmentParameterInstanceResult = new AssessmentParameterInstanceResult();
       resultOption.crudAction = CRUDAction.Create;
       resultOption.editionId = 0;
       resultOption.resultOptionId = option.id;
-      resultOption.resultText = option.name;
+      resultOption.resultText = option.shortName ? option.shortName : option.displayName ? option.displayName : option.name;
       resultOption.unitId = 0;
       resultOption.id = 0;
       resultOption.resultOption = option;
@@ -269,45 +247,40 @@ export class ParameterInputterComponent implements OnInit {
       option.checked = true;
     }
     this.executeActionsFromSettings();
+    this.assessmentChanged();
   }
 
-  // ContextMenuAddInstanceShow(args: any) {
-  //   this.assessmentInstance
-  //   this.parameterTemplate
-  //   this.assessmentInstance.parameters[this.index]
-  //   debugger
-  //   this._assessmentParameterTemplateToAssessmentTemplateService.getByParameterId(this.parameterTemplate.id).then(p => {
+  async markItemSingle(option) {
+    let idResult: number = 0;
+    if (this.assessmentInstance.parameters[this.index].results.length > 0) {
+      idResult = this.assessmentInstance.parameters[this.index].results[0].id;
+    }
+    console.log(idResult);
 
-  //     this._assessmentInstanceService.getNew(this.assessmentInstance.parameters[this.index].id, 2, Number(this.patient.id)).then((res: any) => {
-  //       let newInstance = res;
-
-  //       newInstance.orderedOn = new Date();
-  //       newInstance.touched = false;
-  //       newInstance.changed = false;
-  //       newInstance.regardingToType = 0;
-  //       newInstance.assessmentTemplate.templateHash = res.assessmentTemplate.displayName.substring(0, 3) + new Date().getTime().toString();
-
-  //       if (this.parameterInstance.assessmentInstances === undefined) this.parameterInstance.assessmentInstances = [];
-  //       this.parameterInstance.assessmentInstances.push(newInstance);
-
-  //       if (this.assessmentInstance.children === undefined) this.assessmentInstance.children = [];
-
-  //       newInstance.assessmentInstanceToAssessmentInstances = [];
-  //       let assessmentInstanceToAssessmentInstance: AssessmentInstanceToAssessmentInstance = new AssessmentInstanceToAssessmentInstance();
-  //       assessmentInstanceToAssessmentInstance.counterPartId = this.assessmentInstance.id;
-  //       assessmentInstanceToAssessmentInstance.crudAction = CRUDAction.Create;
-  //       assessmentInstanceToAssessmentInstance.partId = newInstance.id;
-  //       assessmentInstanceToAssessmentInstance.parameterInstanceId = this.parameterInstance.id;
-
-  //       newInstance.assessmentInstanceToAssessmentInstances.push(assessmentInstanceToAssessmentInstance);
-
-  //       this.assessmentInstance.children.push(newInstance);
-
-  //       let result = { resultText: undefined };
-
-  //     });
-  //   });
-  // }
+    let markItem: boolean = true;
+    if (this.assessmentInstance.parameters[this.index].results) {
+      await this.assessmentInstance.parameters[this.index].results.forEach(async result => {
+        if (result.resultOption) {
+          if (result.resultOption.id == option.id) {
+            let obj: any = [{ id: idResult }];
+            this.assessmentInstance.parameters[this.index].results = obj;
+            markItem = false;
+          }
+        }
+      });
+    }
+    if (markItem) {
+      let obj: any = [{
+        id: idResult, resultOption: option, resultOptionId: option.id,
+        resultText: option.displayName, resultValue: option.name, parameterInstanceId: this.assessmentInstance.parameters[this.index].id,
+        crudAction: CRUDAction.Create
+      }];
+      this.assessmentInstance.parameters[this.index].results = obj;
+    }
+    this.assessmentInstance.parameters[this.index]['resultOption'] = this.assessmentInstance.parameters[this.index].results[0];
+    await this.executeActionsFromSettings();
+    this.assessmentChanged();
+  }
 
 
   @HostListener('input', ['$event.target'])
@@ -332,7 +305,11 @@ export class ParameterInputterComponent implements OnInit {
   async numericOnCreated(args: any) {
 
   }
+  numericOnChanged(args){
 
+  }
+
+  assessmentInstanceSelectionChange(args){}
 
 }
 export class WeekDays {

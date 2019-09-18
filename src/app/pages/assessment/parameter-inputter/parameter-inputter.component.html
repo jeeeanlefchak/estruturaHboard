@@ -46,8 +46,7 @@
         <div *ngSwitchDefault>
         </div>
         <div *ngSwitchCase="112">
-          <ion-input type="number" value="0"
-            [(ngModel)]="assessmentInstance?.parameters[index]?.parameterTemplate?.results[0].resultText"
+          <ion-input type="number" value="0" [(ngModel)]="assessmentInstance?.parameters[index]?.results[0].resultText"
             (click)="numericOnCreated($event)" (ionChange)="numericOnChanged($event)"></ion-input>
         </div>
         <div *ngSwitchCase="113">
@@ -68,7 +67,7 @@
           <ion-row>
             <ion-col size="8">
               <ion-input type="number" value="0"
-                [(ngModel)]="assessmentInstance?.parameters[index]?.parameterTemplate?.results[0].resultText"
+                [(ngModel)]="assessmentInstance?.parameters[index]?.results[0].resultText"
                 (click)="numericOnCreated($event)" (ionChange)="numericOnChanged($event)"></ion-input>
             </ion-col>
             <ion-col size="2">
@@ -111,14 +110,14 @@
         <div *ngSwitchCase="603">
           <ion-item>
             <ion-datetime display-format="D/M/YYYY h,m a"
-              [(ngModel)]="assessmentInstance?.parameters[index]?.parameterTemplate?.results[0].resultText">
+              [(ngModel)]="assessmentInstance?.parameters[index]?.results[0].resultText">
             </ion-datetime>
           </ion-item>
         </div>
         <div *ngSwitchCase="810">
           <ion-item>
             <ion-datetime display-format="D/M/YY h,m a"
-              [(ngModel)]="assessmentInstance?.parameters[index]?.parameterTemplate?.results[0].resultText">
+              [(ngModel)]="assessmentInstance?.parameters[index]?.results[0].resultText">
               <!-- (ionChange)="updateDate(parameterTemplate?.options, $event)" -->
             </ion-datetime>
           </ion-item>
@@ -179,8 +178,9 @@
         </div> -->
 
         <div *ngSwitchCase="806" class="date806">
-          <div [ngClass]="{'itemSelected': assessmentInstance.parameters[index]['resultOption'] == option}"
-            class="result" (click)="assessmentInstance.parameters[index]['resultOption'] = option"
+          <div [ngClass]="{'itemSelected': assessmentInstance?.parameters[index].results[0]?.resultOption?.id == option?.id ||
+          assessmentInstance?.parameters[index].results[0]?.resultOptionID == option?.id}" class="result"
+            (click)="markItemSingle(option)"
             *ngFor="let option of assessmentInstance?.parameters[index]?.parameterTemplate?.options">
             {{option.displayName}}
           </div>
@@ -193,8 +193,7 @@
           <ion-radio-group>
             <div>
               <div *ngFor="let option of assessmentInstance?.parameters[index]?.parameterTemplate?.options">
-                <ion-checkbox
-                  (click)="assessmentInstance?.parameters[index]?.parameterTemplate['resultOption'] = option">
+                <ion-checkbox (click)="markItemSingle(option)">
                 </ion-checkbox>
                 {{option.name}}
               </div>
@@ -206,13 +205,13 @@
 
     <div *ngSwitchCase="100">
       <div>
-        <span *ngFor="let instance of assessmentInstance?.parameters[index]?.parameterTemplate?.assessmentInstances">
+        <span *ngFor="let instance of assessmentInstance?.parameters[index]?.parameterTemplate?.options">
           {{ instance.orderedOn | date: 'MMM/dd/yyyy (EEE) h:mm a' }}
-          <button (click)="assessmentInstanceSelectionChange({action: 'DELETE', data: data})" ejs-button
+          <button (click)="assessmentInstanceSelectionChange({action: 'DELETE', data: instance})"
             cssClass="e-round e-small">
             <i style="color:#FFFFFF;" class="fal fa-trash-alt"></i>
           </button>
-          <button (click)="assessmentInstanceSelectionChange({action: 'EDIT', data: data})" ejs-button
+          <button (click)="assessmentInstanceSelectionChange({action: 'EDIT', data: instance})"
             cssClass="e-round e-small">
             <i style="color:#FFFFFF;" class="fal fa-edit"></i>
           </button>
@@ -234,8 +233,7 @@
       </div>
       <div *ngSwitchCase="101">
         <ion-item *ngSwitchCase="101">
-          <ion-textarea autoresize
-          (ionBlur)="setText($event)">
+          <ion-textarea autoresize (ionBlur)="setText($event)">
           </ion-textarea>
         </ion-item>
       </div>

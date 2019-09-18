@@ -12,6 +12,7 @@ import { FileService } from 'src/app/services/file.service';
 import { FileTransfer, FileTransferObject } from '@ionic-native/file-transfer/ngx';
 import { DocumentViewer, DocumentViewerOptions } from '@ionic-native/document-viewer/ngx';
 import { File } from '@ionic-native/File/ngx';
+import { AssessmentParams } from 'src/app/models/assessmentParams';
 @Component({
   selector: 'app-admission',
   templateUrl: './admission.component.html',
@@ -94,23 +95,16 @@ export class AdmissionComponent implements OnInit {
   }
 
   async openAssessmentEditor(data, assessmentInstanceUid: string, rowUpdate: string, action?: string) {
-    let obj = {
-      assessmentInstanceUid: assessmentInstanceUid,
-      rowUpdate: rowUpdate,
-      assessmentInstances: [{}],
-      currentRoom: data.room,
-      assessmentParams: {
-        admissionId: data.admission.id,
-        objectId: data.patient.id,
-        objectType: 2,
-        activePatient: data.patient
-      },
-      admission: data.admission,
-      action: action ? action : 'NEW',
-      patient: data.patient
-    }
-
-    this.storgeConfigurations.set('assessment', obj).then(success => {
+    let assessmentParams: AssessmentParams = new AssessmentParams();
+    assessmentParams.admissionId = data.admission.id;
+    assessmentParams.objectId = data.patient.id;
+    assessmentParams.objectType = 2;
+    assessmentParams.patient = data.patient;
+    assessmentParams.room = data.room;
+    assessmentParams.assessmentInstanceUid = assessmentInstanceUid;
+    assessmentParams.action = action ? action : 'NEW';
+    assessmentParams.id = 0;
+    this.storgeConfigurations.set('assessment', assessmentParams).then(success => {
       this.router.navigate(['assessment']);
     })
   }
@@ -133,17 +127,19 @@ export class AdmissionComponent implements OnInit {
           });
         }
         if (res[i].physician) {
-          res[i].physician.forEach(physician => {
-            this.personService.getById(physician.personId).then((person) => {
-              physician.person = person;
-              if (physician.positionOccupations[0].position.cssClassContent != undefined) {
-                if (typeof (physician.positionOccupations[0].position.cssClassContent) == 'string') {
-                  physician.positionOccupations[0].position.cssClassContent = JSON.parse(physician.positionOccupations[0].position.cssClassContent);
+          if (res[i].physician.physicians) {
+            res[i].physician.physicians.forEach(physician => {
+              this.personService.getById(physician.personId).then((person) => {
+                physician.person = person;
+                if (physician.positionOccupations[0].position.cssClassContent != undefined) {
+                  if (typeof (physician.positionOccupations[0].position.cssClassContent) == 'string') {
+                    physician.positionOccupations[0].position.cssClassContent = JSON.parse(physician.positionOccupations[0].position.cssClassContent);
+                  }
+                  physician.positionOccupations[0].position['avatarColor'] = physician.positionOccupations[0].position.cssClassContent['background-color'];
                 }
-                physician.positionOccupations[0].position['avatarColor'] = physician.positionOccupations[0].position.cssClassContent['background-color'];
-              }
+              });
             });
-          });
+          }
         }
         if (res.length - 1 == i) {
         }
@@ -157,7 +153,9 @@ export class AdmissionComponent implements OnInit {
         res.forEach(async (navBarPlayer) => {
           list.forEach(x => {
             if (x.physician) {
-              x.physician = x.physician.filter(x => x.id != navBarPlayer.playerId);
+              if (x.physician.physicians) {
+                x.physician.physicians = x.physician.physicians.filter(x => x.id != navBarPlayer.playerId);
+              }
             }
           })
         });
